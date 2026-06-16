@@ -1,3 +1,5 @@
-export default function Certificates() {
+const Certificates = () => {
     return <>Certificates</>
 }
+
+export default Certificates;

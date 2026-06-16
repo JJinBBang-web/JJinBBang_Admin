@@ -13,7 +13,7 @@ const PAGE_TITLE: Record<string, string> = {
 };
 
 
-export default function Header() {
+export const Header = () => {
   const location = useLocation();
 
   const title =
@@ -41,3 +41,5 @@ export default function Header() {
     </AntHeader>
   );
 }
+
+export default Header;

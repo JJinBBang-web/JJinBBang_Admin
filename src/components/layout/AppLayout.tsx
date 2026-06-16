@@ -7,7 +7,7 @@ import Header from './Header';
 
 const { Content } = Layout;
 
-export default function AppLayout() {
+export const AppLayout = () => {
   return (
     <Layout className="min-h-screen">
       <Sidebar />
@@ -20,3 +20,5 @@ export default function AppLayout() {
     </Layout>
   );
 }
+
+export default AppLayout;

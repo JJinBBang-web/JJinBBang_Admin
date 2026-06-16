@@ -1,3 +1,5 @@
-export default function Reviews() {
-    return <>Reviews</>
+const Reviews = () => {
+    return <>Review</>
 }
+
+export default Reviews;

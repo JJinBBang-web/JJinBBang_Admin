@@ -11,7 +11,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 const { Sider } = Layout;
 
-export default function Sidebar() {
+export const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -59,3 +59,5 @@ export default function Sidebar() {
     </Sider>
   );
 }
+
+export default Sidebar;
