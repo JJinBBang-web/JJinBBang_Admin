@@ -1,0 +1,7 @@
+/* src/index.css */
+@import "tailwindcss";
+
+/* AntD preflight 충돌 방지 */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
