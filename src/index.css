@@ -1,6 +1,40 @@
 /* src/index.css */
 @import "tailwindcss";
 
+/* =========================
+   Design Tokens
+   ========================= */
+
+@theme {
+  /* ---------- Brand ---------- */
+  --color-primary: #2F6DF0;
+  --color-danger: #D83A3A;
+  --color-danger-bg: #FDECEC;
+
+  /* ---------- Text ---------- */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #4B4B4B;
+  --color-text-muted: #767676;
+  --color-text-disabled: #9A9A9A;
+
+  /* ---------- Background ---------- */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-light: #F8F8F8;
+  --color-bg-muted: #F2F2F2;
+
+  /* ---------- Border ---------- */
+  --color-border: #D6D6D6;
+  --color-border-light: #E6E6E6;
+
+  /* ---------- Radius ---------- */
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-pill: 999px;
+
+  /* ---------- Shadow ---------- */
+  --shadow-drawer: -8px 0 30px rgba(0, 0, 0, 0.12);
+}
+
 /* AntD preflight 충돌 방지 */
 *, *::before, *::after {
   box-sizing: border-box;
