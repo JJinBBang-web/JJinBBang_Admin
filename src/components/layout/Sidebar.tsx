@@ -1,15 +1,23 @@
 // src/components/layout/Sidebar.tsx
 
-import { Layout, Menu } from 'antd';
-import {
-  DashboardOutlined,
-  FileTextOutlined,
-  AlertOutlined,
-  SafetyCertificateOutlined,
-} from '@ant-design/icons';
+import { Layout } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const { Sider } = Layout;
+
+interface NavItem {
+  key: string;
+  icon: string;
+  label: string;
+  badge?: number;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { key: '/dashboard', icon: '📊', label: '대시보드' },
+  { key: '/reviews', icon: '📝', label: '리뷰 관리' },
+  { key: '/reports', icon: '🚨', label: '신고 관리', badge: 3 },
+  { key: '/certificates', icon: '🎓', label: '합격증 승인', badge: 3 },
+];
 
 export const Sidebar = () => {
   const navigate = useNavigate();
@@ -18,46 +26,68 @@ export const Sidebar = () => {
   return (
     <Sider
       width={240}
-      style={{minHeight: '100vh'}}
+      className="bg-white!"
+      style={{ minHeight: '100vh', borderRight: '1px solid #D6D6D6' }}
       theme="light"
     >
-      <div className="h-16 flex items-center px-6 border-b border-[#f0f0f0]">
-        <span className="text-2xl">🥟</span>
-        <span className="ml-2 text-lg font-bold">
-          찐빵 관리자
-        </span>
-      </div>
+      <div className="flex h-full flex-col">
+        <div className="flex h-[60px] items-center border-b border-border-light px-5">
+          <span className="text-base font-extrabold text-text-primary">
+            🥟 찐빵 어드민
+          </span>
+        </div>
 
-      <Menu
-        mode="inline"
-        selectedKeys={[location.pathname]}
-        onClick={({ key }) => navigate(key)}
-        className="border-r-0 pt-4"
-        items={[
-          {
-            key: '/dashboard',
-            icon: <DashboardOutlined />,
-            label: '대시보드',
-          },
-          {
-            key: '/reviews',
-            icon: <FileTextOutlined />,
-            label: '리뷰 관리',
-          },
-          {
-            key: '/reports',
-            icon: <AlertOutlined />,
-            label: '신고 관리',
-          },
-          {
-            key: '/certificates',
-            icon: <SafetyCertificateOutlined />,
-            label: '합격증 승인',
-          },
-        ]}
-      />
+        <nav className="flex flex-col gap-0.5 px-3 py-3.5">
+          {NAV_ITEMS.map((item) => {
+            const isActive = location.pathname === item.key;
+
+            return (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => navigate(item.key)}
+                className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-[11px] text-left transition-colors ${
+                  isActive
+                    ? 'bg-[#E8F0FF] text-primary'
+                    : 'text-text-secondary hover:bg-bg-light'
+                }`}
+              >
+                <span className={`w-[18px] text-center text-sm ${isActive ? 'font-bold' : 'font-medium'}`}>
+                  {item.icon}
+                </span>
+                <span className={`flex-1 text-sm ${isActive ? 'font-bold' : 'font-medium'}`}>
+                  {item.label}
+                </span>
+                {item.badge != null && (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-[10px] bg-danger px-1.5 text-[11px] font-bold text-white">
+                    {item.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="mt-auto border-t border-border-light px-4 py-3.5">
+          <div className="mb-2.5 flex items-center gap-2.5">
+            <div className="flex size-8 items-center justify-center rounded-full border border-border bg-bg-muted text-[13px] font-bold text-text-muted">
+              또
+            </div>
+            <div>
+              <div className="text-xs text-text-secondary">ddochi@team.com</div>
+              <div className="text-[11px] text-text-disabled">운영 담당</div>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="w-full rounded-sm border border-border bg-white px-2 py-2 text-[13px] text-text-secondary transition-colors hover:bg-bg-light"
+          >
+            로그아웃
+          </button>
+        </div>
+      </div>
     </Sider>
   );
-}
+};
 
 export default Sidebar;

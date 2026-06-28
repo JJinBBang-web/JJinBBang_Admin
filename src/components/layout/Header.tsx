@@ -12,34 +12,30 @@ const PAGE_TITLE: Record<string, string> = {
   '/certificates': '합격증 승인',
 };
 
-
 export const Header = () => {
   const location = useLocation();
 
-  const title =
-    PAGE_TITLE[location.pathname] ?? '찐빵 관리자';
-  
+  const title = PAGE_TITLE[location.pathname] ?? '찐빵 어드민';
+
   return (
     <AntHeader
       style={{
         background: '#fff',
-        paddingInline: 24,
-        borderBottom: '1px solid #f0f0f0',
+        paddingInline: 28,
+        height: 60,
+        lineHeight: '60px',
+        borderBottom: '1px solid #D6D6D6',
       }}
-      className="
-        flex
-        items-center
-        justify-between
-      "
+      className="flex items-center justify-between"
     >
-      <h1 className="text-lg !font-semibold !mb-0">
+      <h1 className="!mb-0 text-lg font-extrabold tracking-[-0.01em] text-text-primary">
         {title}
       </h1>
-      <div className="text-sm text-gray-500">
-        마지막 갱신: 오늘 06:00
+      <div className="text-[13px] text-text-disabled">
+        마지막 데이터 갱신: 오늘 06:00
       </div>
     </AntHeader>
   );
-}
+};
 
 export default Header;
