@@ -21,7 +21,7 @@ const ReviewActiveCard = ({
             key={id}
             className="relative rounded-sm border border-border-light px-3 py-2.5"
           >
-            <span className="absolute left-[23px] top-[15px] size-[13px] rounded-full border-2 border-white bg-[#2F6DF0]" />
+            <span className="absolute left-[-23px] top-[15px] size-[13px] rounded-full border-2 border-white bg-primary" />
             <div className="text-[13px] font-semibold text-text-primary">
               {title}
             </div>
