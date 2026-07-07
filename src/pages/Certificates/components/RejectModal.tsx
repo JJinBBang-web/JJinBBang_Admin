@@ -46,7 +46,7 @@ const RejectModal = ({ open, onCancel, onConfirm, confirmLoading }: RejectModalP
       <Radio.Group
         value={selectedReason}
         onChange={(e) => setSelectedReason(e.target.value)}
-        className="mt-4 flex w-full flex-col gap-2"
+        className="mt-4 !flex !w-full !flex-col !gap-2.5"
       >
         {REJECT_REASON_OPTIONS.map((reason) => (
           <label
