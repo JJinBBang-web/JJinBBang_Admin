@@ -32,7 +32,7 @@ const CertificateDetailView = ({
         <div className="py-20 text-center text-sm text-text-muted">불러오는 중...</div>
       ) : (
         <>
-          <div className="flex gap-5">
+          <div className="flex h-[75vh] min-h-[520px] items-start gap-5">
             <CertificateViewer imageUrl={certificate.imageUrl} />
             <CertificateInfoPanel certificate={certificate} />
           </div>

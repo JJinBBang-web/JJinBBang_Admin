@@ -14,7 +14,7 @@ const CertificateViewer = ({ imageUrl }: CertificateViewerProps) => {
   const isPdf = imageUrl?.toLowerCase().endsWith('.pdf') ?? false;
 
   return (
-    <div className="relative flex min-h-[520px] flex-1 items-center justify-center overflow-hidden rounded-sm bg-[#1f2226]">
+    <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden rounded-sm bg-[#1f2226]">
       {imageUrl ? (
         isPdf ? (
           <embed
@@ -32,7 +32,7 @@ const CertificateViewer = ({ imageUrl }: CertificateViewerProps) => {
           />
         )
       ) : (
-        <div className="flex aspect-[497/663] items-center justify-center rounded border border-dashed border-text-disabled bg-bg-muted text-[13px] text-text-muted">
+        <div className="flex aspect-[497/663] h-full items-center justify-center rounded border border-dashed border-text-disabled bg-bg-muted text-[13px] text-text-muted">
           합격증 이미지 (플레이스홀더)
         </div>
       )}
