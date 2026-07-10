@@ -42,6 +42,27 @@ export interface ReviewDetail extends Review {
   actions: ReviewAction[];
 }
 
+// ── Certificate ───────────────────────────────────────────────────────
+export type CertificateStatus = 'pending' | 'approved' | 'rejected';
+
+export type RejectReasonCategory = '이미지 식별 불가' | '학교 불일치' | '합격증 아님' | '기타';
+
+export interface Certificate {
+  id: string;
+  appliedAt: string;
+  elapsedHours: number;
+  nickname: string;
+  school: string;
+  isReupload: boolean;
+  status: CertificateStatus;
+}
+
+export interface CertificateDetail extends Certificate {
+  joinedAt: string;
+  email: string;
+  imageUrl: string | null;
+}
+
 // ── Report ────────────────────────────────────────────────────────────
 export type ReportTab = '접수' | '검토중' | '처리완료';
 export type ReportCategory = '욕설·비방' | '허위정보' | '스팸' | '기타';

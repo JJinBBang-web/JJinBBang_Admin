@@ -160,7 +160,7 @@ const Reports = () => {
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`flex items-center gap-0.5 px-4 pb-3 pt-2.5 cursor-pointer bg-transparent border-b-2 -mb-[1px] ${
+              className={`flex items-center gap-0.5 px-4 pb-3 pt-2.5 cursor-pointer bg-transparent border-b-2 -mb-px ${
                 isActive ? 'border-primary' : 'border-transparent'
               }`}
             >
