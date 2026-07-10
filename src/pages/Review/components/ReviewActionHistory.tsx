@@ -1,3 +1,4 @@
+import type { ReviewDetail } from "../../../types";
 import { sectionTitleClassName } from "../styles";
 
 type ReviewActiveCardProps = {
@@ -36,8 +37,12 @@ const ReviewActiveCard = ({
   )
 }
 
+interface ReviewActionHistoryProps {
+  review: ReviewDetail;
+}
 
-const ReviewActionHistory = ({review}) => {
+
+const ReviewActionHistory = ({ review }: ReviewActionHistoryProps) => {
     return (
         <>
             {review.actions.length > 0 && (
