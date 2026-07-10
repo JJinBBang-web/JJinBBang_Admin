@@ -3,7 +3,7 @@ import type { CertificateDetail } from '../../../types';
 import { sectionTitleClassName } from '../styles';
 import { formatElapsedDetail } from '../utils';
 
-type CertificateInfoPanelProps = {
+interface CertificateInfoPanelProps {
   certificate: CertificateDetail;
 };
 

@@ -8,7 +8,7 @@ type ApproveModalProps = {
   confirmLoading?: boolean;
 };
 
-const ApproveModal = ({ open, onCancel, onConfirm, confirmLoading }: ApproveModalProps) => {
+export const ApproveModal = ({ open, onCancel, onConfirm, confirmLoading }: ApproveModalProps) => {
   return (
     <Modal open={open} onCancel={onCancel} footer={null} width={460} closable={false}>
       <div className="flex flex-col gap-1.5">
@@ -26,7 +26,7 @@ const ApproveModal = ({ open, onCancel, onConfirm, confirmLoading }: ApproveModa
           type="primary"
           loading={confirmLoading}
           onClick={onConfirm}
-          className="!h-auto !rounded-sm !px-[15px] !py-[9px] !text-[13px] !font-semibold !shadow-none"
+          className="h-auto! rounded-sm! px-[15px]! py-[9px]! text-[13px]! font-semibold! shadow-none!"
         >
           승인
         </Button>
@@ -34,5 +34,3 @@ const ApproveModal = ({ open, onCancel, onConfirm, confirmLoading }: ApproveModa
     </Modal>
   );
 };
-
-export default ApproveModal;

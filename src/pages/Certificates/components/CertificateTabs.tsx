@@ -1,7 +1,7 @@
 import type { CertificateStatus } from '../../../types';
 import { CERTIFICATE_TABS } from '../constants';
 
-type CertificateTabsProps = {
+interface CertificateTabsProps {
   activeTab: CertificateStatus;
   onChange: (tab: CertificateStatus) => void;
   pendingCount: number;

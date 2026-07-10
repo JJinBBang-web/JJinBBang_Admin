@@ -4,14 +4,14 @@ import type { RejectReasonCategory } from '../../../types';
 import { REJECT_REASON_OPTIONS } from '../constants';
 import { modalActionButtonClassName } from '../styles';
 
-type RejectModalProps = {
+interface RejectModalProps {
   open: boolean;
   onCancel: () => void;
   onConfirm: (reason: string) => void;
   confirmLoading?: boolean;
 };
 
-const RejectModal = ({ open, onCancel, onConfirm, confirmLoading }: RejectModalProps) => {
+export const RejectModal = ({ open, onCancel, onConfirm, confirmLoading }: RejectModalProps) => {
   const [selectedReason, setSelectedReason] = useState<RejectReasonCategory | null>(null);
   const [customReason, setCustomReason] = useState('');
 
@@ -46,7 +46,7 @@ const RejectModal = ({ open, onCancel, onConfirm, confirmLoading }: RejectModalP
       <Radio.Group
         value={selectedReason}
         onChange={(e) => setSelectedReason(e.target.value)}
-        className="mt-4 !flex !w-full !flex-col !gap-2.5"
+        className="mt-4 flex! w-full! flex-col! gap-2.5!"
       >
         {REJECT_REASON_OPTIONS.map((reason) => (
           <label
@@ -66,7 +66,7 @@ const RejectModal = ({ open, onCancel, onConfirm, confirmLoading }: RejectModalP
           onChange={(e) => setCustomReason(e.target.value)}
           placeholder="반려 사유를 적어주세요."
           rows={3}
-          className="!rounded-sm !border-border !text-[13px] !shadow-none"
+          className="rounded-sm! border-border! text-[13px]! shadow-none!"
         />
         <span className="text-xs text-text-muted">
           반려 사유는 알림톡·SMS에 포함되어 발송됩니다.
@@ -89,5 +89,3 @@ const RejectModal = ({ open, onCancel, onConfirm, confirmLoading }: RejectModalP
     </Modal>
   );
 };
-
-export default RejectModal;

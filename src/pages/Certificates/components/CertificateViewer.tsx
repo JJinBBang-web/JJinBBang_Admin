@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-type CertificateViewerProps = {
+interface CertificateViewerProps {
   imageUrl: string | null;
 };
 
@@ -11,7 +11,9 @@ const MAX_ZOOM = 3;
 const CertificateViewer = ({ imageUrl }: CertificateViewerProps) => {
   const [zoom, setZoom] = useState(1);
 
-  const isPdf = imageUrl?.toLowerCase().endsWith('.pdf') ?? false;
+  const isPdf = imageUrl
+  ? new URL(imageUrl).pathname.toLowerCase().endsWith(".pdf")
+  : false;
 
   return (
     <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden rounded-sm bg-[#1f2226]">
@@ -21,7 +23,6 @@ const CertificateViewer = ({ imageUrl }: CertificateViewerProps) => {
             src={imageUrl}
             type="application/pdf"
             className="h-full w-full"
-            style={{ transform: `scale(${zoom})` }}
           />
         ) : (
           <img
@@ -32,11 +33,11 @@ const CertificateViewer = ({ imageUrl }: CertificateViewerProps) => {
           />
         )
       ) : (
-        <div className="flex aspect-[497/663] h-full items-center justify-center rounded border border-dashed border-text-disabled bg-bg-muted text-[13px] text-text-muted">
+        <div className="flex aspect-497/663 h-full items-center justify-center rounded border border-dashed border-text-disabled bg-bg-muted text-[13px] text-text-muted">
           합격증 이미지 (플레이스홀더)
         </div>
       )}
-
+      {!isPdf &&(
       <div className="absolute bottom-4 flex gap-1.5 rounded-lg bg-white/95 p-1.5">
         <button
           type="button"
@@ -62,7 +63,7 @@ const CertificateViewer = ({ imageUrl }: CertificateViewerProps) => {
         >
           ↻
         </button>
-      </div>
+      </div>)}
     </div>
   );
 };

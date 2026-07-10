@@ -3,7 +3,7 @@ import type { CertificateDetail } from '../../../types';
 import CertificateViewer from './CertificateViewer';
 import CertificateInfoPanel from './CertificateInfoPanel';
 
-type CertificateDetailViewProps = {
+interface CertificateDetailViewProps {
   certificate: CertificateDetail | null;
   loading: boolean;
   onBack: () => void;
@@ -11,7 +11,7 @@ type CertificateDetailViewProps = {
   onReject: () => void;
 };
 
-const CertificateDetailView = ({
+export const CertificateDetailView = ({
   certificate,
   loading,
   onBack,
@@ -41,14 +41,14 @@ const CertificateDetailView = ({
             <div className="flex justify-end gap-2.5">
               <Button
                 onClick={onReject}
-                className="!h-auto !rounded-sm !border-border !px-[15px] !py-[9px] !text-[13px] !font-semibold !text-text-primary !shadow-none"
+                className="h-auto! rounded-sm! border-border! px-[15px]! py-[9px]! text-[13px]! font-semibold! text-text-primary! shadow-none!"
               >
                 반려
               </Button>
               <Button
                 type="primary"
                 onClick={onApprove}
-                className="!h-auto !rounded-sm !px-[15px] !py-[9px] !text-[13px] !font-semibold !shadow-none"
+                className="h-auto! rounded-sm !px-[15px]! py-[9px]! text-[13px]! font-semibold! shadow-none!"
               >
                 승인
               </Button>
@@ -59,5 +59,3 @@ const CertificateDetailView = ({
     </div>
   );
 };
-
-export default CertificateDetailView;

@@ -57,11 +57,11 @@ const MOCK_CERTIFICATE_DETAILS: Record<string, Partial<CertificateDetail>> = {
   },
 };
 
-export async function fetchCertificates(): Promise<Certificate[]> {
+export async function getCertificates(): Promise<Certificate[]> {
   return MOCK_CERTIFICATES;
 }
 
-export async function fetchCertificateDetail(id: string): Promise<CertificateDetail | null> {
+export async function getCertificateDetail(id: string): Promise<CertificateDetail | null> {
   const certificate = MOCK_CERTIFICATES.find((item) => item.id === id);
   if (!certificate) {
     return null;
@@ -76,14 +76,14 @@ export async function fetchCertificateDetail(id: string): Promise<CertificateDet
   };
 }
 
-export async function approveCertificate(id: string): Promise<void> {
+export async function putApproveCertificate(id: string): Promise<void> {
   const certificate = MOCK_CERTIFICATES.find((item) => item.id === id);
   if (certificate) {
     certificate.status = 'approved';
   }
 }
 
-export async function rejectCertificate(id: string, _reason: string): Promise<void> {
+export async function putRejectCertificate(id: string, _reason: string): Promise<void> {
   const certificate = MOCK_CERTIFICATES.find((item) => item.id === id);
   if (certificate) {
     certificate.status = 'rejected';

@@ -3,7 +3,7 @@ import type { Certificate, CertificateStatus } from '../../../types';
 import { getCertificateColumns } from '../certificateColumns';
 import { certificateTableStyles } from '../styles';
 
-type CertificateTableProps = {
+interface CertificateTableProps {
   certificates: Certificate[];
   loading: boolean;
   status: CertificateStatus;

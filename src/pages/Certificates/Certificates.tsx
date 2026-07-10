@@ -6,9 +6,9 @@ import { useCertificateDetail } from '../../hooks/useCertificateDetail';
 import { useCertificateActions } from '../../hooks/useCertificateActions';
 import CertificateTabs from './components/CertificateTabs';
 import CertificateTable from './components/CertificateTable';
-import CertificateDetailView from './components/CertificateDetailView';
-import ApproveModal from './components/ApproveModal';
-import RejectModal from './components/RejectModal';
+import { CertificateDetailView } from './components/CertificateDetailView';
+import { ApproveModal } from './components/ApproveModal';
+import { RejectModal } from './components/RejectModal';
 
 type ModalKind = 'approve' | 'reject' | null;
 
