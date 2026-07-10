@@ -53,10 +53,9 @@ const RejectModal = ({ open, onClose, onConfirm }: Props) => {
               key={reason}
               type="button"
               onClick={() => setSelected(prev => (prev === reason ? '' : reason))}
-              className="flex items-center gap-3 px-3.5 py-[11.5px] rounded-sm text-left w-full cursor-pointer bg-white transition-colors"
-              style={{
-                border: `1px solid ${selected === reason ? 'var(--color-primary)' : 'var(--color-border)'}`,
-              }}
+              className={`flex items-center gap-3 px-3.5 py-[11.5px] rounded-sm text-left w-full cursor-pointer bg-white transition-colors border ${
+                selected === reason ? 'border-primary' : 'border-border'
+              }`}
             >
               <div
                 className="shrink-0 size-4 rounded-full border-2 flex items-center justify-center"

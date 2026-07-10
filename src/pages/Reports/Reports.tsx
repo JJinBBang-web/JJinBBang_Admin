@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Button, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { Report, ReportCategory, ReportTab } from '../../types';
-import FilterSelect from '../../components/common/FilterSelect';
-import ForbiddenWordModal from '../../components/common/ForbiddenWordModal';
+import {FilterSelect} from '../../components/common/FilterSelect';
+import { ForbiddenWordModal } from '../../components/common/ForbiddenWordModal';
 import RejectModal from '../../components/common/RejectModal';
 import { reportFilterStyles, reportTableStyles } from './styles';
 
@@ -44,7 +44,11 @@ const REPORT_SORT_OPTIONS: { value: ReportSortOrder; label: string }[] = [
   { value: 'most_reported', label: '신고 많은순' },
 ];
 
-const ExpandedReporterRow = ({ details }: { details: Report['details'] }) => (
+interface ExpandedReporterRowProps {
+  details: Report['details'];
+}
+
+const ExpandedReporterRow = ({ details }: ExpandedReporterRowProps) => (
   <div className="bg-bg-light pl-14 pr-[18px] pb-2.5 pt-1">
     {details.map((d, i) => (
       <div
@@ -70,7 +74,7 @@ const Reports = () => {
   const [sortOrder, setSortOrder] = useState<ReportSortOrder>('latest');
   const [rejectTargetId, setRejectTargetId] = useState<string | null>(null);
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>(['1']);
-  const [forbiddenWordModalOpen, setForbiddenWordModalOpen] = useState(false);
+  const [isforbiddenWordModalOpen, setIsForbiddenWordModalOpen] = useState(false);
 
   const columns: ColumnsType<Report> = [
     {
@@ -138,7 +142,7 @@ const Reports = () => {
             e.stopPropagation();
             setRejectTargetId(record.id);
           }}
-          className="!border-border !text-danger !font-semibold !text-[12.5px] !h-auto !rounded-sm !shadow-none !py-1 !px-[11px]"
+          className="border-border! text-danger! font-semibold! text-[12.5px]! h-auto! rounded-sm! shadow-none! py-1! px-[11px]!"
         >
           기각
         </Button>
@@ -156,26 +160,21 @@ const Reports = () => {
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className="flex items-center gap-0.5 px-4 pb-3 pt-2.5 cursor-pointer bg-transparent"
-              style={{
-                border: 'none',
-                borderBottom: isActive
-                  ? '2px solid var(--color-primary)'
-                  : '2px solid transparent',
-                marginBottom: -1,
-              }}
+              className={`flex items-center gap-0.5 px-4 pb-3 pt-2.5 cursor-pointer bg-transparent border-b-2 -mb-[1px] ${
+                isActive ? 'border-primary' : 'border-transparent'
+              }`}
             >
               <span
-                className="text-sm font-semibold"
-                style={{ color: isActive ? '#1a4dbd' : 'var(--color-text-muted)' }}
+                className={`text-sm font-semibold ${
+                  isActive ? 'text-primary' : 'text-text-muted'
+                }`}
               >
                 {tab}{' '}
               </span>
               <span
-                className="text-sm font-bold"
-                style={{
-                  color: isActive ? 'var(--color-primary)' : 'var(--color-text-disabled)',
-                }}
+                className={`text-sm font-bold ${
+                  isActive ? 'text-primary' : 'text-text-disabled'
+                }`}
               >
                 {TAB_COUNTS[tab]}
               </span>
@@ -187,12 +186,12 @@ const Reports = () => {
       <div className="flex items-center justify-end gap-2.5">
         <FilterSelect
           value={sortOrder}
-          onChange={setSortOrder}
+          onChange={(value: ReportSortOrder) => setSortOrder(value)}
           options={REPORT_SORT_OPTIONS}
           className={reportFilterStyles.select}
         />
         <Button
-          onClick={() => setForbiddenWordModalOpen(true)}
+          onClick={() => setIsForbiddenWordModalOpen(true)}
           className="h-9! rounded-sm! border-border! px-3.5! text-[13px]! font-semibold! text-text-primary! shadow-none!"
         >
           금칙어 사전 관리
@@ -236,8 +235,8 @@ const Reports = () => {
       />
 
       <ForbiddenWordModal
-        open={forbiddenWordModalOpen}
-        onClose={() => setForbiddenWordModalOpen(false)}
+        open={isforbiddenWordModalOpen}
+        onClose={() => setIsForbiddenWordModalOpen(false)}
       />
     </div>
   );

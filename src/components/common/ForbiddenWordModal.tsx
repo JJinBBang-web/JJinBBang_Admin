@@ -6,15 +6,15 @@ interface ForbiddenWord {
   key: string;
   word: string;
   registeredAt: string;
-  active: boolean;
+  isActive: boolean;
 }
 
 const initialWords: ForbiddenWord[] = [
-  { key: '1', word: '[욕설1]', registeredAt: '2025-12-01', active: true },
-  { key: '2', word: '[욕설2]', registeredAt: '2026-01-14', active: true },
-  { key: '3', word: '[비방어]', registeredAt: '2026-02-08', active: true },
-  { key: '4', word: '[광고문구]', registeredAt: '2026-03-22', active: false },
-  { key: '5', word: '[도배문구]', registeredAt: '2026-04-05', active: true },
+  { key: '1', word: '[욕설1]', registeredAt: '2025-12-01', isActive: true },
+  { key: '2', word: '[욕설2]', registeredAt: '2026-01-14', isActive: true },
+  { key: '3', word: '[비방어]', registeredAt: '2026-02-08', isActive: true },
+  { key: '4', word: '[광고문구]', registeredAt: '2026-03-22', isActive: false },
+  { key: '5', word: '[도배문구]', registeredAt: '2026-04-05', isActive: true },
 ];
 
 interface Props {
@@ -22,7 +22,7 @@ interface Props {
   onClose: () => void;
 }
 
-const ForbiddenWordModal = ({ open, onClose }: Props) => {
+export const ForbiddenWordModal = ({ open, onClose }: Props) => {
   const [words, setWords] = useState<ForbiddenWord[]>(initialWords);
   const [newWord, setNewWord] = useState('');
 
@@ -31,13 +31,13 @@ const ForbiddenWordModal = ({ open, onClose }: Props) => {
     const today = new Date().toISOString().split('T')[0];
     setWords(prev => [
       ...prev,
-      { key: Date.now().toString(), word: newWord.trim(), registeredAt: today, active: true },
+      { key: Date.now().toString(), word: newWord.trim(), registeredAt: today, isActive: true },
     ]);
     setNewWord('');
   };
 
-  const toggleActive = (key: string, active: boolean) => {
-    setWords(prev => prev.map(w => (w.key === key ? { ...w, active } : w)));
+  const toggleActive = (key: string, isActive: boolean) => {
+    setWords(prev => prev.map(w => (w.key === key ? { ...w, isActive } : w)));
   };
 
   const deleteWord = (key: string) => {
@@ -50,7 +50,7 @@ const ForbiddenWordModal = ({ open, onClose }: Props) => {
       dataIndex: 'word',
       key: 'word',
       render: (word: string) => (
-        <span className="font-bold text-[#1a1a1a] text-[13px]">{word}</span>
+        <span className="font-bold text-text-primary text-[13px]">{word}</span>
       ),
     },
     {
@@ -58,21 +58,21 @@ const ForbiddenWordModal = ({ open, onClose }: Props) => {
       dataIndex: 'registeredAt',
       key: 'registeredAt',
       render: (date: string) => (
-        <span className="text-[#767676] text-[13px]">{date}</span>
+        <span className="text-text-muted text-[13px]">{date}</span>
       ),
     },
     {
       title: '활성',
-      dataIndex: 'active',
-      key: 'active',
+      dataIndex: 'isActive',
+      key: 'isActive',
       align: 'center',
       width: 90,
-      render: (active: boolean, record) => (
+      render: (isActive: boolean, record) => (
         <Switch
-          checked={active}
+          checked={isActive}
           onChange={val => toggleActive(record.key, val)}
           size="small"
-          style={active ? { background: '#2f6df0' } : undefined}
+          style={isActive ? { background: '#2f6df0' } : undefined}
         />
       ),
     },
@@ -84,7 +84,7 @@ const ForbiddenWordModal = ({ open, onClose }: Props) => {
       render: (_, record) => (
         <button
           onClick={() => deleteWord(record.key)}
-          className="text-[#9a9a9a] hover:text-[#d83a3a] transition-colors text-base cursor-pointer"
+          className="text-text-disabled hover:text-danger transition-colors text-base cursor-pointer"
         >
           🗑
         </button>
@@ -96,10 +96,10 @@ const ForbiddenWordModal = ({ open, onClose }: Props) => {
     <Modal
       title={
         <div className="pb-1">
-          <div className="text-[17px] font-bold text-[#1a1a1a] leading-tight">
+          <div className="text-[17px] font-bold text-text-primary leading-tight">
             금칙어 사전 관리
           </div>
-          <div className="text-[13px] text-[#767676] font-normal mt-1.5">
+          <div className="text-[13px] text-text-muted font-normal mt-1.5">
             등록된 단어가 리뷰에 포함되면 자동으로 ⚠️ 플래그가 표시됩니다.
           </div>
         </div>
@@ -141,11 +141,9 @@ const ForbiddenWordModal = ({ open, onClose }: Props) => {
           dataSource={words}
           pagination={false}
           size="small"
-          className="border border-[#e6e6e6] rounded-md overflow-hidden"
+          className="border border-border rounded-md overflow-hidden"
         />
       </div>
     </Modal>
   );
 };
-
-export default ForbiddenWordModal;
