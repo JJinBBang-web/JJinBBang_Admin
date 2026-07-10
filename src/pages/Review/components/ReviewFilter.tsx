@@ -1,6 +1,6 @@
 import { Input, Button } from "antd";
 import { SCHOOL_OPTIONS, PERIOD_OPTIONS, STATUS_OPTIONS, SORT_OPTIONS } from "../constants";
-import FilterSelect from "../../../components/common/FilterSelect";
+import { FilterSelect } from "../../../components/common/FilterSelect";
 import { reviewFilterStyles } from "../styles";
 import { useReviewFilterStore } from "../../../store/useReviewFilterStore";
 

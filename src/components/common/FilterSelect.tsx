@@ -1,6 +1,6 @@
 import { Select } from "antd";
 
-interface FilterSelectProps<T extends string>  {
+export interface FilterSelectProps<T extends string>  {
     value: T;
     options: { value: T; label: string }[];
     onChange: (value: T) => void;
@@ -18,7 +18,7 @@ export const FilterSelect = <T extends string>({
           value={value}
           onChange={onChange}
           options={options}
-          className={`px-3! text-[13px]! ${className}`}
+          className={`px-3! text-[13px]! ${className || ''}`}
         />
     );
 };

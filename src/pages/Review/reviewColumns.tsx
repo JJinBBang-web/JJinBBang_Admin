@@ -1,6 +1,6 @@
 import type { ColumnsType } from 'antd/es/table';
 import type { Review } from '../../types';
-import CustomTagBtn from '../../components/common/CustomTagBtn';
+import { CustomTagBtn } from '../../components/common/CustomTagBtn';
 
 export const reviewColumns: ColumnsType<Review> = [
     {

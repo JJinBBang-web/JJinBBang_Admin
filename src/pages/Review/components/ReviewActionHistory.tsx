@@ -42,7 +42,7 @@ interface ReviewActionHistoryProps {
 }
 
 
-const ReviewActionHistory = ({ review } : ReviewActionHistoryProps) => {
+const ReviewActionHistory = ({ review }: ReviewActionHistoryProps) => {
     return (
         <>
             {review.actions.length > 0 && (

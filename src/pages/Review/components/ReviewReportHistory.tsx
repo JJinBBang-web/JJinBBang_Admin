@@ -35,7 +35,7 @@ interface ReviewReportHistoryProps {
     review: ReviewDetail;
 }
 
-const ReviewReportHistory = ({review} : ReviewReportHistoryProps) => {
+const ReviewReportHistory = ({review}: ReviewReportHistoryProps) => {
     return (
         <>
             <div className="flex flex-col gap-2">
