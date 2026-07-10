@@ -1,4 +1,4 @@
-import CustomTagBtn from "../../../components/common/CustomTagBtn"
+import { CustomTagBtn } from "../../../components/common/CustomTagBtn"
 
 type ReviewPhotoListProps = {
   photos: string[];

@@ -4,7 +4,7 @@ export const SCHOOL_OPTIONS = [
     { value: 'all', label: '학교 전체' },
     { value: '경상국립대', label: '경상국립대' },
     { value: '경북대', label: '경북대' },
-    { value: '깅원대', label: '깅원대' },
+    { value: '강원대', label: '강원대' },
     { value: '부산대', label: '부산대' },
     { value: '서울대', label: '서울대' },
     { value: '전남대', label: '전남대' },
