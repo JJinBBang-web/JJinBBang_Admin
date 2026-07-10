@@ -4,7 +4,7 @@ import type { ColumnsType } from 'antd/es/table';
 import type { Report, ReportCategory, ReportTab } from '../../types';
 import {FilterSelect} from '../../components/common/FilterSelect';
 import { ForbiddenWordModal } from '../../components/common/ForbiddenWordModal';
-import RejectModal from '../../components/common/RejectModal';
+import { RejectModal } from '../../components/common/RejectModal';
 import { reportFilterStyles, reportTableStyles } from './styles';
 
 const CATEGORY_STYLE: Record<ReportCategory, string> = {

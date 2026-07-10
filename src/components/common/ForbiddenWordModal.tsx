@@ -9,7 +9,7 @@ interface ForbiddenWord {
   isActive: boolean;
 }
 
-const initialWords: ForbiddenWord[] = [
+const INITIAL_WORDS: ForbiddenWord[] = [
   { key: '1', word: '[욕설1]', registeredAt: '2025-12-01', isActive: true },
   { key: '2', word: '[욕설2]', registeredAt: '2026-01-14', isActive: true },
   { key: '3', word: '[비방어]', registeredAt: '2026-02-08', isActive: true },
@@ -17,13 +17,13 @@ const initialWords: ForbiddenWord[] = [
   { key: '5', word: '[도배문구]', registeredAt: '2026-04-05', isActive: true },
 ];
 
-interface Props {
+export interface ForbiddenWordModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-export const ForbiddenWordModal = ({ open, onClose }: Props) => {
-  const [words, setWords] = useState<ForbiddenWord[]>(initialWords);
+export const ForbiddenWordModal = ({ open, onClose }: ForbiddenWordModalProps) => {
+  const [words, setWords] = useState<ForbiddenWord[]>(INITIAL_WORDS);
   const [newWord, setNewWord] = useState('');
 
   const addWord = () => {

@@ -10,7 +10,7 @@ interface Props {
   onConfirm: (reason: string, note: string) => void;
 }
 
-const RejectModal = ({ open, onClose, onConfirm }: Props) => {
+export const RejectModal = ({ open, onClose, onConfirm }: Props) => {
   const [selected, setSelected] = useState<PresetReason | ''>('');
   const [note, setNote] = useState('');
 
@@ -91,14 +91,14 @@ const RejectModal = ({ open, onClose, onConfirm }: Props) => {
         <div className="flex justify-end gap-2 pt-[14px]">
           <Button
             onClick={handleClose}
-            className="!border-border !text-text-primary !font-semibold !shadow-none !rounded-sm"
+            className="border-border! text-text-primary! font-semibold! shadow-none! rounded-sm!"
           >
             취소
           </Button>
           <Button
             onClick={handleConfirm}
-            className="!border-border !text-text-primary !font-semibold !shadow-none !rounded-sm"
-            style={{ opacity: hasReason ? 1 : 0.5, cursor: hasReason ? 'pointer' : 'default' }}
+            disabled={!hasReason}
+            className="border-border! text-text-primary! font-semibold! shadow-none! rounded-sm!"
           >
             기각 확정
           </Button>
@@ -107,5 +107,3 @@ const RejectModal = ({ open, onClose, onConfirm }: Props) => {
     </Modal>
   );
 };
-
-export default RejectModal;
