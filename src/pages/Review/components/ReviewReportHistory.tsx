@@ -1,3 +1,4 @@
+import type { ReviewDetail } from "../../../types";
 import { sectionTitleClassName } from "../styles";
 
 type ReviewReportCardProps = {
@@ -30,7 +31,11 @@ const ReviewReportCard = ({
     )
 }
 
-const ReviewReportHistory = ({review}) => {
+interface ReviewReportHistoryProps {
+    review: ReviewDetail;
+}
+
+const ReviewReportHistory = ({review} : ReviewReportHistoryProps) => {
     return (
         <>
             <div className="flex flex-col gap-2">

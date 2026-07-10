@@ -29,5 +29,3 @@ export const CustomTagBtn = ({ status }: CustomTagBtnProps) => {
     </span>
   );
 };
-
-export default CustomTagBtn;
