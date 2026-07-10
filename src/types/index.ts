@@ -41,3 +41,23 @@ export interface ReviewDetail extends Review {
   reports: ReviewReport[];
   actions: ReviewAction[];
 }
+
+// ── Report ────────────────────────────────────────────────────────────
+export type ReportTab = '접수' | '검토중' | '처리완료';
+export type ReportCategory = '욕설·비방' | '허위정보' | '스팸' | '기타';
+
+export interface ReporterDetail {
+  reporter: string;
+  reportedAt: string;
+  reason: string;
+}
+
+export interface Report {
+  id: string;
+  reportedAt: string;
+  categories: ReportCategory[];
+  reportCount: number;
+  targetReview: string;
+  reporterSummary: string;
+  details: ReporterDetail[];
+}
