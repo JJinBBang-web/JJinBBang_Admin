@@ -229,7 +229,7 @@ const Reports = () => {
       <RejectModal
         open={rejectTargetId !== null}
         onClose={() => setRejectTargetId(null)}
-        onConfirm={(_reason, _note) => {
+        onConfirm={() => {
           setRejectTargetId(null);
         }}
       />

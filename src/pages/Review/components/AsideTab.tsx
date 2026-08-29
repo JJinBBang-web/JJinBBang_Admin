@@ -32,7 +32,7 @@ export const AsideTab = ({
         header: { display: 'none' },
       }}
       className="
-        [&_.ant-drawer-content]:shadow-[-8px_0_30px_rgba(0,0,0,0.12)!]
+        [&_.ant-drawer-content]:shadow-[-8px_0_30px_rgba(0,0,0,0.12)]!
         [&_.ant-drawer-content]:border-l!
         [&_.ant-drawer-content]:border-border!
       "

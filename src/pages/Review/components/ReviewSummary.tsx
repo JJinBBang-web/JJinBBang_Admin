@@ -1,4 +1,5 @@
 import { CustomTagBtn } from "../../../components/common/CustomTagBtn"
+import type { ReviewDetail } from "../../../types";
 
 type ReviewPhotoListProps = {
   photos: string[];
@@ -21,7 +22,11 @@ const ReviewPhotoList = ({ photos }: ReviewPhotoListProps) => {
   );
 };
 
-const ReviewSummary = ({review}) => {
+interface ReviewSummaryProps {
+  review: ReviewDetail;
+}
+
+const ReviewSummary = ({review}: ReviewSummaryProps) => {
     return (
         <>
             <div className="flex flex-col gap-1.5">

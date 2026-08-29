@@ -67,24 +67,6 @@ export const Sidebar = () => {
             );
           })}
         </nav>
-
-        <div className="mt-auto border-t border-border-light px-4 py-3.5">
-          <div className="mb-2.5 flex items-center gap-2.5">
-            <div className="flex size-8 items-center justify-center rounded-full border border-border bg-bg-muted text-[13px] font-bold text-text-muted">
-              또
-            </div>
-            <div>
-              <div className="text-xs text-text-secondary">ddochi@team.com</div>
-              <div className="text-[11px] text-text-disabled">운영 담당</div>
-            </div>
-          </div>
-          <button
-            type="button"
-            className="w-full rounded-sm border border-border bg-white px-2 py-2 text-[13px] text-text-secondary transition-colors hover:bg-bg-light"
-          >
-            로그아웃
-          </button>
-        </div>
       </div>
     </Sider>
   );
