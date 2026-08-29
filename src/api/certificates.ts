@@ -83,7 +83,8 @@ export async function putApproveCertificate(id: string): Promise<void> {
   }
 }
 
-export async function putRejectCertificate(id: string, _reason: string): Promise<void> {
+export async function putRejectCertificate(id: string, reason: string): Promise<void> {
+  void reason;
   const certificate = MOCK_CERTIFICATES.find((item) => item.id === id);
   if (certificate) {
     certificate.status = 'rejected';

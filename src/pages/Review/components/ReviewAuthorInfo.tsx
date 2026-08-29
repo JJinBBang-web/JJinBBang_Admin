@@ -1,7 +1,12 @@
 import { Descriptions } from "antd"
+import type { ReviewDetail } from "../../../types";
 import { sectionTitleClassName } from "../styles";
 
-const ReivewAuthorInfo = ({review}) => {
+interface ReviewAuthorInfoProps {
+  review: ReviewDetail;
+}
+
+const ReivewAuthorInfo = ({review}: ReviewAuthorInfoProps) => {
     return (
         <>
             <div className="flex flex-col gap-2.5">

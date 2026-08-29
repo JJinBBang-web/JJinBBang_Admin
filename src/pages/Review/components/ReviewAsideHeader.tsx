@@ -1,4 +1,8 @@
-const ReviewAsideHeader = ({onClose}) => {
+interface ReviewAsideHeaderProps {
+  onClose: () => void;
+}
+
+const ReviewAsideHeader = ({onClose}: ReviewAsideHeaderProps) => {
     return (
         <div className="flex items-center gap-2.5 border-b border-border px-5 py-4">
           <button
