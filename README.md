@@ -64,8 +64,11 @@ npm run lint
 npm run build
 ```
 
-`develop` 또는 `main` push가 검증을 통과하면 전체 Git SHA 태그로
-`ghcr.io/jjinbbang-web/jjinbbang-admin` 이미지를 게시한다. 이어서 GitHub App으로
-`jjinbbang-lab`에 `admin-image-built` dispatch를 보내며, `develop`은 `dev`,
-`main`은 `prod`로 지정한다. Dispatch에는 이미지·태그·소스 저장소/브랜치/SHA와
-Buildx manifest digest를 포함한다. Pull request에서는 검증만 실행한다.
+`develop` 또는 `main` push가 검증을 통과하면 `linux/arm64` 이미지를 전체 Git SHA
+태그로 `ghcr.io/jjinbbang-web/jjinbbang-admin`에 게시한다. `develop`은 개발 배포용
+후보 이미지만 게시한다. `main`은 게시한 이미지의 digest와 ARM64 manifest를
+확인하고, GitHub App 자격 증명이 구성된 경우에만 `jjinbbang-lab`에 `prod` 대상
+`admin-image-built` dispatch를 보낸다. 일시적 전송 실패는 최대 3회 재시도하며,
+자격 증명이 없으면 이미지 게시를 유지하고 dispatch만 건너뛴다. Dispatch에는 이미지·
+태그·소스 저장소/브랜치/SHA와 Buildx manifest digest를 포함한다. Pull request에서는
+검증만 실행한다.
