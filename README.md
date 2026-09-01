@@ -44,3 +44,31 @@ src
 * TanStack Query
 * Axios
 * Zustand
+
+## Authentik 로그인
+
+- 보호된 화면에 세션이 없으면 `/login`으로 이동한다.
+- 로그인 버튼은 같은 출처의 `/oauth2/authorization/authentik`으로 이동한다.
+- 회원가입 UI는 제공하지 않으며 계정·비밀번호·MFA는 Authentik에서 관리한다.
+- 로그인 정보는 `/api/admin/auth/me`에서 조회하고 HttpOnly 세션 쿠키를
+  사용하므로 브라우저 저장소에 OIDC 토큰을 저장하지 않는다.
+- 로그아웃은 `/api/admin/auth/csrf`에서 받은 토큰을 포함해
+  `/api/admin/auth/logout`에 POST한 뒤 Authentik 세션까지 종료한다.
+
+로컬에서는 관리자 서버를 `8080` 포트에 실행하고 아래 명령을 사용한다.
+
+```bash
+npm ci
+npm run dev
+npm run lint
+npm run build
+```
+
+`develop` 또는 `main` push가 검증을 통과하면 `linux/arm64` 이미지를 전체 Git SHA
+태그로 `ghcr.io/jjinbbang-web/jjinbbang-admin`에 게시한다. `develop`은 개발 배포용
+후보 이미지만 게시한다. `main`은 게시한 이미지의 digest와 ARM64 manifest를
+확인하고, GitHub App 자격 증명이 구성된 경우에만 `jjinbbang-lab`에 `prod` 대상
+`admin-image-built` dispatch를 보낸다. 일시적 전송 실패는 최대 3회 재시도하며,
+자격 증명이 없으면 이미지 게시를 유지하고 dispatch만 건너뛴다. Dispatch에는 이미지·
+태그·소스 저장소/브랜치/SHA와 Buildx manifest digest를 포함한다. Pull request에서는
+검증만 실행한다.

@@ -7,16 +7,18 @@ import Header from './Header';
 
 const { Content } = Layout;
 
-export default function AppLayout() {
+export const AppLayout = () => {
   return (
-    <Layout className="min-h-screen">
+    <Layout className="min-h-screen bg-white">
       <Sidebar />
-      <Layout>
+      <Layout className="!bg-white">
         <Header />
-        <Content className="bg-gray-50 p-6">
+        <Content className="bg-white px-7 pb-9 pt-[26px]">
           <Outlet />
         </Content>
       </Layout>
     </Layout>
   );
-}
+};
+
+export default AppLayout;

@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+.bkit/
+.gemini/policies/
+.gemini/teams/
+
+.omo/
