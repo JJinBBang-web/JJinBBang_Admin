@@ -63,7 +63,7 @@ export const Login = () => {
           block
           icon={<LockOutlined />}
           onClick={startLogin}
-          className="!h-12 !rounded-lg !font-bold"
+          className="h-12! rounded-lg! font-bold!"
         >
           Authentik으로 로그인
         </Button>
