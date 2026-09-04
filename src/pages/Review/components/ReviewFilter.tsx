@@ -1,13 +1,14 @@
-import { Input, Button } from "antd";
+import { Input } from "antd";
 import { SCHOOL_OPTIONS, PERIOD_OPTIONS, STATUS_OPTIONS, SORT_OPTIONS } from "../constants";
 import { FilterSelect } from "../../../components/common/FilterSelect";
+import { ForbiddenWordManageButton } from "../../../components/common/ForbiddenWordManageButton";
 import { reviewFilterStyles } from "../styles";
 import { useReviewFilterStore } from "../../../store/useReviewFilterStore";
 
 const ReviewFilter = () => {
 
     const filter = useReviewFilterStore();
-    
+
     return (
       <div className="flex items-center gap-2.5">
         <Input
@@ -67,9 +68,7 @@ const ReviewFilter = () => {
             options={SORT_OPTIONS}
             className={reviewFilterStyles.select}
           />
-          <Button className="h-9! rounded-sm! border-border! px-3.5! text-[13px]! font-semibold! text-text-primary! shadow-none!">
-            금칙어 사전 관리
-          </Button>
+          <ForbiddenWordManageButton />
         </div>
       </div>
     )
