@@ -28,3 +28,7 @@ dist-ssr
 .gemini/teams/
 
 .omo/
+
+.env
+.env.*
+!.env.example

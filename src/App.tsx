@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Reviews from './pages/Review/Reviews';
 import Reports from './pages/Reports/Reports';
 import Certificates from './pages/Certificates/Certificates';
+import CertificateDetail from './pages/Certificates/CertificateDetail';
 import Login from './pages/Login/Login';
 import AuthGuard from './components/auth/AuthGuard';
 
@@ -20,6 +21,7 @@ export default function App() {
             <Route path="/reviews" element={<Reviews />} />
             <Route path="/reports" element={<Reports/>} />
             <Route path="/certificates" element={<Certificates />} />
+            <Route path="/certificates/:id" element={<CertificateDetail />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
