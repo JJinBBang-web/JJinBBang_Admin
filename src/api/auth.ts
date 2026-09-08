@@ -1,4 +1,7 @@
-import { apiClient, type ApiResponse } from './client';
+import { apiClient, getCsrfToken, type ApiResponse, type CsrfToken } from './client';
+
+export { getCsrfToken };
+export type { CsrfToken };
 
 export interface AdminSession {
   id: number;
@@ -7,26 +10,14 @@ export interface AdminSession {
   displayName: string | null;
 }
 
-export interface CsrfToken {
-  token: string;
-  parameterName: string;
-  headerName: string;
-}
-
 export const getCurrentAdmin = async () => {
   const response =
     await apiClient.get<ApiResponse<AdminSession>>('/admin/auth/me');
   return response.data.data;
 };
 
-export const getCsrfToken = async () => {
-  const response =
-    await apiClient.get<ApiResponse<CsrfToken>>('/admin/auth/csrf');
-  return response.data.data;
-};
-
 export const submitLogout = async () => {
-  const csrf = await getCsrfToken();
+  const csrf = await getCsrfToken(true);
   const form = document.createElement('form');
   const token = document.createElement('input');
 
