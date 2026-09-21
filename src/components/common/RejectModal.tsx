@@ -1,20 +1,29 @@
 import { useState } from 'react';
 import { Button, Modal } from 'antd';
+import type { RejectReasonType } from '../../types';
 
 const PRESET_REASONS = ['중복 신고', '위반 없음', '기타'] as const;
 type PresetReason = (typeof PRESET_REASONS)[number];
 
+const REASON_TYPE_MAP: Record<PresetReason, RejectReasonType> = {
+  '중복 신고': 'DUPLICATE',
+  '위반 없음': 'NO_VIOLATION',
+  기타: 'OTHER',
+};
+
 interface Props {
   open: boolean;
   onClose: () => void;
-  onConfirm: (reason: string, note: string) => void;
+  onConfirm: (rejectReasonType: RejectReasonType, customReason?: string) => void;
+  confirmLoading?: boolean;
 }
 
-export const RejectModal = ({ open, onClose, onConfirm }: Props) => {
+export const RejectModal = ({ open, onClose, onConfirm, confirmLoading }: Props) => {
   const [selected, setSelected] = useState<PresetReason | ''>('');
   const [note, setNote] = useState('');
 
-  const hasReason = selected !== '' || note.trim() !== '';
+  // '기타'는 백엔드에서 customReason을 필수로 요구하므로 직접 입력이 있어야 활성화된다.
+  const hasReason = selected === '기타' ? note.trim() !== '' : selected !== '' || note.trim() !== '';
 
   const handleClose = () => {
     setSelected('');
@@ -24,7 +33,8 @@ export const RejectModal = ({ open, onClose, onConfirm }: Props) => {
 
   const handleConfirm = () => {
     if (!hasReason) return;
-    onConfirm(selected, note);
+    const rejectReasonType = selected === '' ? 'OTHER' : REASON_TYPE_MAP[selected];
+    onConfirm(rejectReasonType, note.trim() || undefined);
     setSelected('');
     setNote('');
   };
@@ -98,6 +108,7 @@ export const RejectModal = ({ open, onClose, onConfirm }: Props) => {
           <Button
             onClick={handleConfirm}
             disabled={!hasReason}
+            loading={confirmLoading}
             className="border-border! text-text-primary! font-semibold! shadow-none! rounded-sm!"
           >
             기각 확정

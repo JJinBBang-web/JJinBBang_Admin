@@ -1,11 +1,10 @@
 import { Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import type { Report, ReportCategory, ReportTab } from '../../types';
-import { CATEGORY_STYLE } from './constants';
+import type { Report, ReportTab } from '../../types';
 
 export function getReportColumns(
   activeTab: ReportTab,
-  onReject: (id: string) => void,
+  onReject: (reviewId: number, reportId: number) => void,
 ): ColumnsType<Report> {
   return [
     {
@@ -17,17 +16,17 @@ export function getReportColumns(
     },
     {
       title: '유형',
-      dataIndex: 'categories',
-      key: 'categories',
+      dataIndex: 'reasons',
+      key: 'reasons',
       width: 237,
-      render: (categories: ReportCategory[], record: Report) => (
+      render: (reasons: string[], record: Report) => (
         <div className="flex items-center gap-1 flex-wrap">
-          {categories.map(c => (
+          {reasons.map(reason => (
             <span
-              key={c}
-              className={`inline-flex items-center rounded-[12px] px-2.5 py-[3px] text-xs font-semibold ${CATEGORY_STYLE[c] ?? 'bg-bg-muted text-text-muted'}`}
+              key={reason}
+              className="inline-flex items-center rounded-[12px] bg-bg-muted px-2.5 py-[3px] text-xs font-semibold text-text-muted"
             >
-              {c}
+              {reason}
             </span>
           ))}
           {record.reportCount > 1 && (
@@ -66,18 +65,19 @@ export function getReportColumns(
       title: '',
       key: 'action',
       width: 108,
-      render: (_, record: Report) => (
-        <Button
-          size="small"
-          onClick={e => {
-            e.stopPropagation();
-            onReject(record.id);
-          }}
-          className="border-border! text-danger! font-semibold! text-[12.5px]! h-auto! rounded-sm! shadow-none! py-1! px-[11px]!"
-        >
-          기각
-        </Button>
-      ),
+      render: (_, record: Report) =>
+        activeTab === '접수' && record.details.length === 1 ? (
+          <Button
+            size="small"
+            onClick={e => {
+              e.stopPropagation();
+              onReject(record.reviewId, record.details[0].reportId);
+            }}
+            className="border-border! text-danger! font-semibold! text-[12.5px]! h-auto! rounded-sm! shadow-none! py-1! px-[11px]!"
+          >
+            기각
+          </Button>
+        ) : null,
     },
   ];
 }
