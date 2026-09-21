@@ -64,22 +64,62 @@ export interface CertificateDetail extends Certificate {
 }
 
 // ── Report ────────────────────────────────────────────────────────────
-export type ReportTab = '접수' | '검토중' | '처리완료';
-export type ReportCategory = '욕설·비방' | '허위정보' | '스팸' | '기타';
+export type ReportTab = '접수' | '처리완료';
 export type ReportSortOrder = 'latest' | 'most_reported';
 
 export interface ReporterDetail {
+  reportId: number;
   reporter: string;
   reportedAt: string;
   reason: string;
+  status: ReportProcessStatus;
 }
 
 export interface Report {
   id: string;
+  reviewId: number;
   reportedAt: string;
-  categories: ReportCategory[];
+  reasons: string[];
   reportCount: number;
   targetReview: string;
   reporterSummary: string;
   details: ReporterDetail[];
 }
+
+// ── Prohibited Word (신고 관리 · 금칙어 사전) ────────────────────────────
+export interface ProhibitedWord {
+  id: number;
+  word: string;
+  enabled: boolean;
+  createdAt: string;
+}
+
+export interface PageInfo {
+  currentPage: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+  isFirst: boolean;
+  isLast: boolean;
+}
+
+// ── Report Processing (신고 관리 · 신고 목록/기각) ───────────────────────
+export type ReportProcessStatus = 'PENDING' | 'APPROVE' | 'REJECT';
+
+export interface SubReport {
+  reportId: number;
+  reporterId: number;
+  reason: string;
+  status: ReportProcessStatus;
+  reportedAt: string;
+}
+
+export interface ReportedReview {
+  reviewId: number;
+  schoolName: string;
+  content: string;
+  totalReportCount: number;
+  subReports: SubReport[];
+}
+
+export type RejectReasonType = 'DUPLICATE' | 'NO_VIOLATION' | 'OTHER';
