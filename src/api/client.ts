@@ -88,7 +88,13 @@ async function unwrap<T>(promise: Promise<{ data: ApiResponse<T> }>): Promise<T>
 }
 
 export const http = {
-  get: <T>(url: string, params?: object) => unwrap<T>(apiClient.get(url, { params })),
+  get: <T>(url: string, params?: object) =>
+    unwrap<T>(
+      apiClient.get(url, {
+        params,
+        paramsSerializer: { indexes: null },
+      }),
+    ),
   post: <T>(url: string, body?: unknown) => unwrap<T>(apiClient.post(url, body)),
   put: <T>(url: string, body?: unknown) => unwrap<T>(apiClient.put(url, body)),
   delete: <T>(url: string) => unwrap<T>(apiClient.delete(url)),

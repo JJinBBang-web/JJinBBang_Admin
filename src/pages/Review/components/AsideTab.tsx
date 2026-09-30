@@ -32,7 +32,7 @@ export const AsideTab = ({
         header: { display: 'none' },
       }}
       className="
-        [&_.ant-drawer-content]:shadow-[-8px_0_30px_rgba(0,0,0,0.12)]!
+        [&_.ant-drawer-content]:shadow-drawer!
         [&_.ant-drawer-content]:border-l!
         [&_.ant-drawer-content]:border-border!
       "
@@ -42,7 +42,7 @@ export const AsideTab = ({
 
         {review && (
           <>
-            <div className="flex flex-1 flex-col gap-[21px] overflow-y-auto p-5">
+            <div className="flex flex-1 flex-col gap-5.25 overflow-y-auto p-5">
               <ReviewSummary review={review}/>
               <ReviewAuthorInfo review={review}/>
               <ReviewReportHistory review={review}/>

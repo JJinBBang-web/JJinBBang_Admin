@@ -42,6 +42,15 @@ export interface ReviewDetail extends Review {
   actions: ReviewAction[];
 }
 
+export interface PageInfo {
+  currentPage: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+  isFirst: boolean;
+  isLast: boolean;
+}
+
 // ── Certificate ───────────────────────────────────────────────────────
 export type CertificateStatus = 'pending' | 'approved' | 'rejected';
 

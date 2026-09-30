@@ -1,201 +1,237 @@
-import type { Review, ReviewDetail, ReviewSortOrder } from '../types';
+import type {
+  PageInfo,
+  Review,
+  ReviewDetail,
+  ReviewSortOrder,
+  ReviewStatus,
+} from '../types';
+import { http } from './client';
 
-const MOCK_REVIEWS: Review[] = [
-  {
-    id: '1',
-    status: 'public',
-    hasBannedWord: false,
-    school: '경상국립대',
-    title: '가좌동 ○○원룸 — 방음 안 되고 벌레 많아요',
-    author: '익명의찐빵이',
-    rating: 2.5,
-    reportCount: 0,
-    createdAt: '2026-06-03',
-  },
-  {
-    id: '2',
-    status: 'public',
-    hasBannedWord: true,
-    school: '부산대',
-    title: '집주인이 [욕설] 진짜 별로예요',
-    author: '장전동거주자',
-    rating: 1.0,
-    reportCount: 3,
-    createdAt: '2026-06-02',
-  },
-  {
-    id: '3',
-    status: 'private',
-    hasBannedWord: false,
-    school: '전남대',
-    title: '운영 정책에 따라 숨김 처리된 리뷰',
-    author: null,
-    rating: 4.0,
-    reportCount: 1,
-    createdAt: '2026-05-30',
-  },
-  {
-    id: '4',
-    status: 'public',
-    hasBannedWord: false,
-    school: '충남대',
-    title: '궁동 ○○빌 — 학교 가깝고 관리비 저렴',
-    author: '새내기곰',
-    rating: 4.5,
-    reportCount: 0,
-    createdAt: '2026-06-01',
-  },
-  {
-    id: '5',
-    status: 'public',
-    hasBannedWord: false,
-    school: '경북대',
-    title: '산격동 투룸 후기, 주차 가능해서 만족',
-    author: '복현동주민',
-    rating: 4.0,
-    reportCount: 0,
-    createdAt: '2026-05-28',
-  },
-];
+// 타입
+export type ReviewPeriodType = 'LAST_7_DAYS' | 'LAST_30_DAYS' | 'LAST_1_YEAR';
+export type ReviewApiStatus = 'PUBLIC' | 'PRIVATE';
+export type ReviewApiSort = 'LATEST' | 'REPORT' | 'RATING_HIGH' | 'RATING_LOW';
 
-export interface ReviewQueryParams {
+// 리뷰 리스트 쿼리
+export interface ReviewListQuery {
+  searchKeyword?: string;
+  schoolNames?: string[];
+  periodType?: ReviewPeriodType;
+  status?: ReviewApiStatus;
+  hasBadWordOnly?: boolean;
+  sort?: ReviewApiSort;
+  page?: number;
+  size?: number;
+}
+
+// 리뷰 리스트 아이템 타입
+export interface ReviewListItemDto {
+  id: number;
+  status: ReviewApiStatus;
+  hasBadWord: boolean;
+  schoolName: string;
+  title: string;
+  content: string;
+  userName: string | null;
+  rating: number;
+  reportCount: number;
+  createdAt: string;
+}
+
+// 리뷰 리스트 데이터 타입
+export interface ReviewListData {
+  reviewList: ReviewListItemDto[];
+  pageInfo: PageInfo;
+}
+
+// 리뷰 신고 타입
+export interface ReviewReportDto {
+  reportReason: string;
+  reporterId: number;
+  reportedAt: string;
+}
+
+// 리뷰 히스토리 타입
+export interface ReviewHistoryDto {
+  actionNames: string[];
+  actionAt: string;
+  handler: string;
+  reason: string;
+}
+
+// 리뷰 상세 타입
+export interface ReviewDetailDto {
+  reviewId: number;
+  status: ReviewApiStatus;
+  schoolName: string;
+  hasBadWordFlag: boolean;
+  rating: number;
+  createdAt: string;
+  reportCount: number;
+  content: string;
+  images: string[];
+  userId: number;
+  nickname: string;
+  email: string;
+  reportList: ReviewReportDto[];
+  historyList: ReviewHistoryDto[];
+}
+
+// 리뷰 리스트 필터 타입
+export interface ReviewListFilters {
   keyword?: string;
   school?: string;
   period?: string;
   status?: string;
   bannedWordsOnly?: boolean;
   sortOrder?: ReviewSortOrder;
+  page?: number;
+  size?: number;
 }
 
-export async function fetchReviews(params: ReviewQueryParams = {}): Promise<Review[]> {
+// 리뷰 리스트 결과 타입
+export interface ReviewListResult {
+  reviews: Review[];
+  pageInfo: PageInfo;
+}
+
+// 타입 매핑
+const PERIOD_TYPE_MAP: Record<string, ReviewPeriodType> = {
+  '7d': 'LAST_7_DAYS',
+  '30d': 'LAST_30_DAYS',
+  '1y': 'LAST_1_YEAR',
+};
+const STATUS_MAP: Record<string, ReviewApiStatus> = {
+  public: 'PUBLIC',
+  private: 'PRIVATE',
+};
+const SORT_MAP: Record<ReviewSortOrder, ReviewApiSort> = {
+  latest: 'LATEST',
+  reportest: 'REPORT',
+  rating_high: 'RATING_HIGH',
+  rating_low: 'RATING_LOW',
+};
+
+const ACTION_LABELS: Record<string, string> = {
+  BAD_WORD: '금칙어 처리',
+  PRIVACY_EXPOSURE: '개인정보 노출',
+};
+
+function toUiStatus(status: string): ReviewStatus {
+  return status.toUpperCase() === 'PRIVATE' ? 'private' : 'public';
+}
+
+function toListQuery(filters: ReviewListFilters = {}): ReviewListQuery {
   const {
     keyword = '',
     school = 'all',
+    period = 'all',
     status = 'all',
     bannedWordsOnly = false,
     sortOrder = 'latest',
-  } = params;
+    page = 0,
+    size = 10,
+  } = filters;
 
-  let results = [...MOCK_REVIEWS];
+  const query: ReviewListQuery = {
+    hasBadWordOnly: bannedWordsOnly,
+    sort: SORT_MAP[sortOrder],
+    page,
+    size,
+  };
 
-  if (keyword.trim()) {
-    const q = keyword.trim().toLowerCase();
-    results = results.filter(
-      (r) =>
-        r.title.toLowerCase().includes(q) ||
-        r.author?.toLowerCase().includes(q),
-    );
+  const searchKeyword = keyword.trim();
+  if (searchKeyword) {
+    query.searchKeyword = searchKeyword;
   }
 
   if (school !== 'all') {
-    results = results.filter((r) => r.school === school);
+    query.schoolNames = [school];
   }
 
-  if (status !== 'all') {
-    results = results.filter((r) => r.status === status);
+  if (period !== 'all' && PERIOD_TYPE_MAP[period]) {
+    query.periodType = PERIOD_TYPE_MAP[period];
   }
 
-  if (bannedWordsOnly) {
-    results = results.filter((r) => r.hasBannedWord);
+  if (status !== 'all' && STATUS_MAP[status]) {
+    query.status = STATUS_MAP[status];
   }
 
-  results.sort((a, b) => {
-    switch (sortOrder) {
-      case 'reportest':
-        return b.reportCount - a.reportCount;
-      case 'rating_high':
-        return b.rating - a.rating;
-      case 'rating_low':
-        return a.rating - b.rating;
-      case 'latest':
-      default:
-        return b.createdAt.localeCompare(a.createdAt);
-    }
-  });
-
-  return results;
+  return query;
 }
 
-const MOCK_REVIEW_DETAILS: Record<string, ReviewDetail> = {
-  '2': {
-    id: '2',
-    status: 'public',
-    hasBannedWord: true,
-    school: '부산대',
-    title: '집주인이 [욕설] 진짜 별로예요',
-    author: '장전동거주자',
-    rating: 1.0,
-    reportCount: 3,
-    createdAt: '2026-06-02',
-    content:
-      '계약 연장을 문의했더니 집주인이 [욕설] 하면서 응대했습니다. 보일러 고장을 신고해도 2주 넘게 방치했고요. 장전동 일대를 알아보시는 분들은 참고하세요. 다시는 안 살 집입니다.',
-    photos: ['사진 1', '사진 2'],
-    authorInfo: {
-      nickname: '장전동거주자',
-      email: 'kim***@pusan.ac.kr',
-    },
-    reports: [
-      {
-        id: 'r1',
-        category: '욕설·비방',
-        reporter: 'user_8821',
-        reportedAt: '2026-06-02 14:30',
-      },
-      {
-        id: 'r2',
-        category: '욕설·비방',
-        reporter: 'user_1043',
-        reportedAt: '2026-06-02 18:05',
-      },
-      {
-        id: 'r3',
-        category: '욕설·비방',
-        reporter: 'user_5577',
-        reportedAt: '2026-06-03 08:11',
-      },
-    ],
-    actions: [
-      {
-        id: 'a1',
-        title: '게시 승인',
-        actor: 'ddochi',
-        actedAt: '2026-06-02 14:02',
-        reason: '사유: 정책상 즉시 게시 — 사후 검토 대상',
-      },
-      {
-        id: 'a2',
-        title: '금칙어 자동 플래그',
-        actor: 'system',
-        actedAt: '2026-06-02 14:02',
-        reason: '사유: 사전 등록 단어 감지',
-      },
-    ],
-  },
-};
-
-function buildReviewDetail(review: Review): ReviewDetail {
+function toReview(item: ReviewListItemDto): Review {
   return {
-    ...review,
-    content: review.title,
-    photos: [],
-    authorInfo: {
-      nickname: review.author ?? '–',
-      email: '–',
-    },
-    reports: [],
-    actions: [],
+    id: String(item.id),
+    status: toUiStatus(item.status),
+    hasBannedWord: item.hasBadWord,
+    school: item.schoolName,
+    title: item.title,
+    author: item.userName,
+    rating: item.rating,
+    reportCount: item.reportCount,
+    createdAt: item.createdAt,
   };
 }
 
-export async function fetchReviewDetail(reviewId: string): Promise<ReviewDetail | null> {
-  if (MOCK_REVIEW_DETAILS[reviewId]) {
-    return MOCK_REVIEW_DETAILS[reviewId];
-  }
+function toActionTitle(actionNames: string[]): string {
+  return actionNames
+    .map((name) => ACTION_LABELS[name] ?? name)
+    .join(', ');
+}
 
-  const review = MOCK_REVIEWS.find((item) => item.id === reviewId);
-  if (!review) {
-    return null;
-  }
+function toReviewDetail(item: ReviewDetailDto): ReviewDetail {
+  return {
+    id: String(item.reviewId),
+    status: toUiStatus(item.status),
+    hasBannedWord: item.hasBadWordFlag,
+    school: item.schoolName,
+    title: '',
+    author: item.nickname,
+    rating: item.rating,
+    reportCount: item.reportCount,
+    createdAt: item.createdAt,
+    content: item.content,
+    photos: item.images ?? [],
+    authorInfo: {
+      nickname: item.nickname,
+      email: item.email,
+    },
+    reports: (item.reportList ?? []).map((report, index) => ({
+      id: `${item.reviewId}-report-${index}`,
+      category: report.reportReason,
+      reporter: String(report.reporterId),
+      reportedAt: report.reportedAt,
+    })),
+    actions: (item.historyList ?? []).map((history, index) => ({
+      id: `${item.reviewId}-history-${index}`,
+      title: toActionTitle(history.actionNames ?? []),
+      actor: history.handler,
+      actedAt: history.actionAt,
+      reason: history.reason,
+    })),
+  };
+}
 
-  return buildReviewDetail(review);
+// 리뷰 리스트 조회
+export async function fetchReviews(
+  filters: ReviewListFilters = {},
+): Promise<ReviewListResult> {
+  const data = await http.get<ReviewListData>(
+    '/admin/reviews',
+    toListQuery(filters),
+  );
+
+  return {
+    reviews: (data.reviewList ?? []).map(toReview),
+    pageInfo: data.pageInfo,
+  };
+}
+
+// 리뷰 상세 조회
+export async function fetchReviewDetail(
+  reviewId: string,
+): Promise<ReviewDetail | null> {
+  const data = await http.get<ReviewDetailDto>(`/admin/reviews/${reviewId}`);
+  return data ? toReviewDetail(data) : null;
 }

@@ -10,14 +10,23 @@ const ReviewPhotoList = ({ photos }: ReviewPhotoListProps) => {
 
   return (
     <div className="flex gap-2 pt-2">
-      {photos.map((photo) => (
-        <div
-          key={photo}
-          className="flex size-[84px] items-center justify-center rounded-sm border border-dashed border-border bg-bg-muted text-[11px] text-text-disabled"
-        >
-          {photo}
-        </div>
-      ))}
+      {photos.map((photo) =>
+        photo.startsWith('http') ? (
+          <img
+            key={photo}
+            src={photo}
+            alt="리뷰 이미지"
+            className="size-21 rounded-sm border border-border object-cover"
+          />
+        ) : (
+          <div
+            key={photo}
+            className="flex size-21 items-center justify-center rounded-sm border border-dashed border-border bg-bg-muted text-[11px] text-text-disabled"
+          >
+            {photo}
+          </div>
+        ),
+      )}
     </div>
   );
 };
@@ -45,9 +54,11 @@ const ReviewSummary = ({review}: ReviewSummaryProps) => {
                   </span>
                 </div>
 
-                <h3 className="pt-0.5 text-base font-bold leading-[23px] text-text-primary">
-                  {review.title}
-                </h3>
+                {review.title && (
+                  <h3 className="pt-0.5 text-base font-bold leading-5.75 text-text-primary">
+                    {review.title}
+                  </h3>
+                )}
 
                 <div className="flex flex-wrap gap-x-3 gap-y-1 text-[12.5px] text-text-muted">
                   <span>신고 {review.reportCount}건</span>
