@@ -1,4 +1,5 @@
 import type {
+  MaskingReasonCategory,
   PageInfo,
   Review,
   ReviewDetail,
@@ -11,6 +12,28 @@ import { http } from './client';
 export type ReviewPeriodType = 'LAST_7_DAYS' | 'LAST_30_DAYS' | 'LAST_1_YEAR';
 export type ReviewApiStatus = 'PUBLIC' | 'PRIVATE';
 export type ReviewApiSort = 'LATEST' | 'REPORT' | 'RATING_HIGH' | 'RATING_LOW';
+export type ReviewMaskReason =
+  | 'BAD_WORD'
+  | 'PRIVACY_EXPOSURE'
+  | 'FALSE_SUSPICION'
+  | 'ETC';
+
+// 화면 표시용 마스킹 사유 → API 코드
+export const MASK_REASON_CODE: Record<MaskingReasonCategory, ReviewMaskReason> = {
+  '욕설·비방': 'BAD_WORD',
+  '개인정보 노출': 'PRIVACY_EXPOSURE',
+  '허위 의심': 'FALSE_SUSPICION',
+  '기타': 'ETC',
+};
+
+export interface ReviewMaskPreviewDto {
+  maskedContent: string;
+}
+
+export interface ReviewMaskRequest {
+  reasons: ReviewMaskReason[];
+  detailReason: string;
+}
 
 // 리뷰 리스트 쿼리
 export interface ReviewListQuery {
@@ -234,4 +257,33 @@ export async function fetchReviewDetail(
 ): Promise<ReviewDetail | null> {
   const data = await http.get<ReviewDetailDto>(`/admin/reviews/${reviewId}`);
   return data ? toReviewDetail(data) : null;
+}
+
+// 리뷰 삭제
+export async function deleteReview(reviewId: string): Promise<void> {
+  await http.delete<null>(`/admin/reviews/${reviewId}`);
+}
+
+// 리뷰 상태 변경
+export async function patchReviewStatus(
+  reviewId: string,
+  status: ReviewApiStatus,
+): Promise<void> {
+  await http.patch<null>(`/admin/reviews/${reviewId}/status`, { status });
+}
+
+// 리뷰 마스킹 미리보기 조회
+export async function fetchReviewMaskPreview(reviewId: string): Promise<string> {
+  const data = await http.get<ReviewMaskPreviewDto>(
+    `/admin/reviews/${reviewId}/mask`,
+  );
+  return data?.maskedContent ?? '';
+}
+
+// 리뷰 마스킹 확정
+export async function postReviewMask(
+  reviewId: string,
+  body: ReviewMaskRequest,
+): Promise<void> {
+  await http.post<null>(`/admin/reviews/${reviewId}/mask`, body);
 }

@@ -1,5 +1,11 @@
 export type ReviewStatus = 'public' | 'private';
 
+export type MaskingReasonCategory =
+  | '욕설·비방'
+  | '개인정보 노출'
+  | '허위 의심'
+  | '기타';
+
 export interface Review {
   id: string;
   status: ReviewStatus;
