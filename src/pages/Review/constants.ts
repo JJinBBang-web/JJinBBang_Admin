@@ -1,4 +1,4 @@
-import type { ReviewSortOrder } from "../../types";
+import type { MaskingReasonCategory, ReviewSortOrder } from "../../types";
 
 export const SCHOOL_OPTIONS = [
     { value: 'all', label: '학교 전체' },
@@ -32,4 +32,11 @@ export const SORT_OPTIONS: { value: ReviewSortOrder; label: string }[] = [
     { value: 'reportest', label: '신고순' },
     { value: 'rating_high', label: '별점 높은순' },
     { value: 'rating_low', label: '별점 낮은순' },
+  ];
+
+export const MASKING_REASON_OPTIONS: MaskingReasonCategory[] = [
+    '욕설·비방',
+    '개인정보 노출',
+    '허위 의심',
+    '기타',
   ];

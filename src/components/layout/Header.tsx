@@ -44,7 +44,7 @@ export const Header = () => {
       }}
       className="flex items-center justify-between"
     >
-      <h1 className="!mb-0 text-lg font-extrabold tracking-[-0.01em] text-text-primary">
+      <h1 className="mb-0! text-lg font-extrabold tracking-[-0.01em] text-text-primary">
         {title}
       </h1>
       <div className="flex items-center gap-4">
