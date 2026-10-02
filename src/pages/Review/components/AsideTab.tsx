@@ -48,7 +48,7 @@ export const AsideTab = ({
               <ReviewReportHistory review={review}/>
               <ReviewActionHistory review={review}/>
             </div>
-            <ReviewAsideFooter/>
+            <ReviewAsideFooter review={review}/>
           </>
         )}
       </div>
