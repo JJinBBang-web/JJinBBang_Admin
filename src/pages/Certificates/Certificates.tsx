@@ -1,28 +1,50 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { CertificateStatus } from '../../types';
-import { useCertificates } from '../../hooks/useCertificates';
+import { useCertificates, useCertificatePendingCount } from '../../hooks/useCertificates';
 import CertificateTabs from './components/CertificateTabs';
 import CertificateTable from './components/CertificateTable';
 
 const Certificates = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<CertificateStatus>('pending');
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
 
-  const { data: certificates = [], isLoading } = useCertificates();
+  const { data, isLoading } = useCertificates({ status: activeTab, page, size });
+  const { data: pendingCount = 0 } = useCertificatePendingCount();
 
-  const pendingCount = certificates.filter((c) => c.status === 'pending').length;
-  const visibleCertificates = certificates
-    .filter((c) => c.status === activeTab)
-    .sort((a, b) => a.appliedAt.localeCompare(b.appliedAt));
+  const certificates = data?.certificates ?? [];
+  const pageInfo = data?.pageInfo ?? {
+    currentPage: page,
+    pageSize: size,
+    totalElements: 0,
+    totalPages: 0,
+    isFirst: true,
+    isLast: true,
+  };
+
+  const handleTabChange = (tab: CertificateStatus) => {
+    setActiveTab(tab);
+    setPage(0);
+  };
 
   return (
     <div className="flex flex-col gap-3">
-      <CertificateTabs activeTab={activeTab} onChange={setActiveTab} pendingCount={pendingCount} />
+      <CertificateTabs activeTab={activeTab} onChange={handleTabChange} pendingCount={pendingCount} />
       <CertificateTable
-        certificates={visibleCertificates}
+        certificates={certificates}
         loading={isLoading}
         status={activeTab}
+        pageInfo={pageInfo}
+        onPageChange={(nextPage, nextSize) => {
+          if (nextSize !== size) {
+            setSize(nextSize);
+            setPage(0);
+            return;
+          }
+          setPage(nextPage);
+        }}
         onReview={(id) => navigate(`/certificates/${id}`)}
       />
       <p className="text-[11.5px] text-text-disabled">

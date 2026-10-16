@@ -1,5 +1,79 @@
 // src/api/certificates.ts
-import type { Certificate, CertificateDetail } from '../types';
+import type { Certificate, CertificateDetail, CertificateStatus, PageInfo } from '../types';
+import { http } from './client';
+
+// 타입
+export type CertificateApiStatus = 'PENDING' | 'APPROVE' | 'REJECT';
+
+// 합격증명서 목록 쿼리
+export interface CertificateListQuery {
+  status: CertificateApiStatus;
+  page: number;
+  size: number;
+}
+
+// 합격증명서 목록 아이템 타입
+export interface CertificateListItemDto {
+  certificateId: number;
+  createdAt: string;
+  userId: number;
+  userName?: string | null;
+  isReuploaded: boolean;
+  schoolName: string;
+}
+
+// 합격증명서 목록 데이터 타입
+export interface CertificateListData {
+  certificateList: CertificateListItemDto[];
+  pageInfo: PageInfo;
+}
+
+// 합격증명서 목록 필터 타입
+export interface CertificateListFilters {
+  status?: CertificateStatus;
+  page?: number;
+  size?: number;
+}
+
+// 합격증명서 목록 결과 타입
+export interface CertificateListResult {
+  certificates: Certificate[];
+  pageInfo: PageInfo;
+}
+
+// 타입 매핑
+const STATUS_MAP: Record<CertificateStatus, CertificateApiStatus> = {
+  pending: 'PENDING',
+  approved: 'APPROVE',
+  rejected: 'REJECT',
+};
+
+const HOUR_MS = 60 * 60 * 1000;
+
+// 'YYYY-MM-DD HH:mm' → 신청 후 경과 시간(시간 단위)
+function toElapsedHours(createdAt: string): number {
+  const created = new Date(createdAt.replace(' ', 'T')).getTime();
+  if (Number.isNaN(created)) {
+    return 0;
+  }
+  return Math.max(0, Math.floor((Date.now() - created) / HOUR_MS));
+}
+
+function toCertificate(
+  item: CertificateListItemDto,
+  status: CertificateStatus,
+): Certificate {
+  return {
+    id: String(item.certificateId),
+    appliedAt: item.createdAt,
+    elapsedHours: toElapsedHours(item.createdAt),
+    // userName이 아직 응답에 없어 userId로 대체 표시
+    nickname: item.userName ?? String(item.userId),
+    school: item.schoolName,
+    isReupload: item.isReuploaded,
+    status,
+  };
+}
 
 const MOCK_CERTIFICATES: Certificate[] = [
   {
@@ -57,8 +131,24 @@ const MOCK_CERTIFICATE_DETAILS: Record<string, Partial<CertificateDetail>> = {
   },
 };
 
-export async function getCertificates(): Promise<Certificate[]> {
-  return MOCK_CERTIFICATES;
+// 합격증명서 목록 조회
+export async function fetchCertificates(
+  filters: CertificateListFilters = {},
+): Promise<CertificateListResult> {
+  const { status = 'pending', page = 0, size = 10 } = filters;
+  const query: CertificateListQuery = { status: STATUS_MAP[status], page, size };
+
+  const data = await http.get<CertificateListData>(
+    '/admin/certificates/admission',
+    query,
+  );
+
+  return {
+    certificates: (data.certificateList ?? []).map((item) =>
+      toCertificate(item, status),
+    ),
+    pageInfo: data.pageInfo,
+  };
 }
 
 export async function getCertificateDetail(id: string): Promise<CertificateDetail | null> {
