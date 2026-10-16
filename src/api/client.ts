@@ -80,7 +80,19 @@ apiClient.interceptors.response.use(
 );
 
 async function unwrap<T>(promise: Promise<{ data: ApiResponse<T> }>): Promise<T> {
-  const { data } = await promise;
+  let data: ApiResponse<T>;
+  try {
+    ({ data } = await promise);
+  } catch (error) {
+    // 4xx/5xx 응답이면 서버가 내려준 message를 에러 메시지로 사용
+    if (axios.isAxiosError<Partial<ApiResponse<unknown>>>(error)) {
+      const serverMessage = error.response?.data?.message;
+      if (typeof serverMessage === 'string' && serverMessage) {
+        error.message = serverMessage;
+      }
+    }
+    throw error;
+  }
   if (data.code !== 200) {
     throw new Error(data.message);
   }
@@ -88,8 +100,15 @@ async function unwrap<T>(promise: Promise<{ data: ApiResponse<T> }>): Promise<T>
 }
 
 export const http = {
-  get: <T>(url: string, params?: object) => unwrap<T>(apiClient.get(url, { params })),
+  get: <T>(url: string, params?: object) =>
+    unwrap<T>(
+      apiClient.get(url, {
+        params,
+        paramsSerializer: { indexes: null },
+      }),
+    ),
   post: <T>(url: string, body?: unknown) => unwrap<T>(apiClient.post(url, body)),
   put: <T>(url: string, body?: unknown) => unwrap<T>(apiClient.put(url, body)),
+  patch: <T>(url: string, body?: unknown) => unwrap<T>(apiClient.patch(url, body)),
   delete: <T>(url: string) => unwrap<T>(apiClient.delete(url)),
 };

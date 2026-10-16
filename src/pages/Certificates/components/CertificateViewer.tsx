@@ -11,9 +11,10 @@ const MAX_ZOOM = 3;
 const CertificateViewer = ({ imageUrl }: CertificateViewerProps) => {
   const [zoom, setZoom] = useState(1);
 
+  // 상대경로가 와도 new URL이 예외를 던지지 않도록 origin 기준으로 파싱
   const isPdf = imageUrl
-  ? new URL(imageUrl).pathname.toLowerCase().endsWith(".pdf")
-  : false;
+    ? new URL(imageUrl, window.location.origin).pathname.toLowerCase().endsWith('.pdf')
+    : false;
 
   return (
     <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden rounded-sm bg-[#1f2226]">

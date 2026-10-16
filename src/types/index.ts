@@ -1,5 +1,11 @@
 export type ReviewStatus = 'public' | 'private';
 
+export type MaskingReasonCategory =
+  | '욕설·비방'
+  | '개인정보 노출'
+  | '허위 의심'
+  | '기타';
+
 export interface Review {
   id: string;
   status: ReviewStatus;
@@ -42,6 +48,15 @@ export interface ReviewDetail extends Review {
   actions: ReviewAction[];
 }
 
+export interface PageInfo {
+  currentPage: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+  isFirst: boolean;
+  isLast: boolean;
+}
+
 // ── Certificate ───────────────────────────────────────────────────────
 export type CertificateStatus = 'pending' | 'approved' | 'rejected';
 
@@ -58,6 +73,7 @@ export interface Certificate {
 }
 
 export interface CertificateDetail extends Certificate {
+  userId: string; // 승인/반려 API path에 사용
   joinedAt: string;
   email: string;
   imageUrl: string | null;

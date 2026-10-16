@@ -6,8 +6,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const proxyTarget = env.VITE_API_PROXY_TARGET || 'http://localhost:8080'
 
-  const createApiProxy = (): ProxyOptions => ({
-    target: proxyTarget,
+  const createApiProxy = (target: string = proxyTarget): ProxyOptions => ({
+    target,
     changeOrigin: true,
     configure: (proxy) => {
       proxy.on('proxyReq', (proxyReq) => {
