@@ -41,6 +41,19 @@ export interface CertificateListResult {
   pageInfo: PageInfo;
 }
 
+// 합격증명서 상세 응답 타입
+export interface CertificateDetailDto {
+  certificateId: number;
+  userId: number;
+  userName?: string | null;
+  imageUrl: string | null; // 합격증 이미지 URL
+  schoolName: string;
+  createdAt: string; // 신청일시 'YYYY-MM-DD HH:mm'
+  userCreatedAt: string; // 가입일 'YYYY-MM-DD'
+  email: string; // 마스킹된 이메일
+  reuploadedId: number | null; // 재업로드 원본 증명서 id (없으면 null)
+}
+
 // 타입 매핑
 const STATUS_MAP: Record<CertificateStatus, CertificateApiStatus> = {
   pending: 'PENDING',
@@ -75,61 +88,25 @@ function toCertificate(
   };
 }
 
-const MOCK_CERTIFICATES: Certificate[] = [
-  {
-    id: '1',
-    appliedAt: '2026-06-05 05:10',
-    elapsedHours: 25,
-    nickname: '전남대25학번',
-    school: '전남대',
-    isReupload: true,
-    status: 'pending',
-  },
-  {
-    id: '2',
-    appliedAt: '2026-06-05 19:20',
-    elapsedHours: 11,
-    nickname: '부산뉴비',
-    school: '부산대',
-    isReupload: false,
-    status: 'pending',
-  },
-  {
-    id: '3',
-    appliedAt: '2026-06-06 00:30',
-    elapsedHours: 6,
-    nickname: '가좌동입성',
-    school: '경상국립대',
-    isReupload: false,
-    status: 'pending',
-  },
-  {
-    id: '4',
-    appliedAt: '2026-06-04 10:00',
-    elapsedHours: 30,
-    nickname: '공대새내기',
-    school: '충남대',
-    isReupload: false,
-    status: 'approved',
-  },
-  {
-    id: '5',
-    appliedAt: '2026-06-03 15:40',
-    elapsedHours: 40,
-    nickname: '기타대학생',
-    school: '제주대',
-    isReupload: false,
-    status: 'rejected',
-  },
-];
-
-const MOCK_CERTIFICATE_DETAILS: Record<string, Partial<CertificateDetail>> = {
-  '1': {
-    joinedAt: '2026-06-04',
-    email: 'jeon***@jnu.ac.kr',
-    imageUrl: null,
-  },
-};
+function toCertificateDetail(
+  item: CertificateDetailDto,
+  status: CertificateStatus,
+): CertificateDetail {
+  return {
+    id: String(item.certificateId),
+    userId: String(item.userId),
+    appliedAt: item.createdAt,
+    elapsedHours: toElapsedHours(item.createdAt),
+    // userName이 아직 응답에 없어 userId로 대체 표시
+    nickname: item.userName ?? String(item.userId),
+    school: item.schoolName,
+    isReupload: item.reuploadedId != null,
+    status,
+    joinedAt: item.userCreatedAt,
+    email: item.email,
+    imageUrl: item.imageUrl || null,
+  };
+}
 
 // 합격증명서 목록 조회
 export async function fetchCertificates(
@@ -151,32 +128,29 @@ export async function fetchCertificates(
   };
 }
 
-export async function getCertificateDetail(id: string): Promise<CertificateDetail | null> {
-  const certificate = MOCK_CERTIFICATES.find((item) => item.id === id);
-  if (!certificate) {
-    return null;
-  }
-
-  const extra = MOCK_CERTIFICATE_DETAILS[id];
-  return {
-    ...certificate,
-    joinedAt: extra?.joinedAt ?? certificate.appliedAt.slice(0, 10),
-    email: extra?.email ?? '–',
-    imageUrl: extra?.imageUrl ?? null,
-  };
+// 합격증명서 상세 조회
+// 상세 응답에 상태값이 없어서, 목록에서 넘겨준 status를 함께 받아 매핑
+export async function getCertificateDetail(
+  id: string,
+  status: CertificateStatus,
+): Promise<CertificateDetail> {
+  const data = await http.get<CertificateDetailDto>(
+    `/admin/certificates/admission/${encodeURIComponent(id)}`,
+  );
+  return toCertificateDetail(data, status);
 }
 
-export async function putApproveCertificate(id: string): Promise<void> {
-  const certificate = MOCK_CERTIFICATES.find((item) => item.id === id);
-  if (certificate) {
-    certificate.status = 'approved';
-  }
+// 합격증명서 승인 (PATCH, path에 certificateId가 아닌 userId 사용)
+export async function patchApproveCertificate(userId: string): Promise<void> {
+  await http.patch<null>(
+    `/admin/certificates/admission/${encodeURIComponent(userId)}/approve`,
+  );
 }
 
-export async function putRejectCertificate(id: string, reason: string): Promise<void> {
-  void reason;
-  const certificate = MOCK_CERTIFICATES.find((item) => item.id === id);
-  if (certificate) {
-    certificate.status = 'rejected';
-  }
+// 합격증명서 반려 (PATCH, path에 userId 사용)
+// 현재 API 명세상 반려 사유를 받는 body가 없어 사유는 전송하지 않음 -> 원인으로 오류 발생하는 것 같음
+export async function patchRejectCertificate(userId: string): Promise<void> {
+  await http.patch<null>(
+    `/admin/certificates/admission/${encodeURIComponent(userId)}/reject`,
+  );
 }

@@ -45,7 +45,8 @@ const Certificates = () => {
           }
           setPage(nextPage);
         }}
-        onReview={(id) => navigate(`/certificates/${id}`)}
+        // 상세 응답에 status가 없어 현재 탭 상태를 쿼리로 전달 (새로고침해도 유지)
+        onReview={(id) => navigate(`/certificates/${id}?status=${activeTab}`)}
       />
       <p className="text-[11.5px] text-text-disabled">
         ※ 업로드 오래된 순 정렬 · SLA 24시간 초과 건은 경과 시간을 빨간색으로 강조합니다.
