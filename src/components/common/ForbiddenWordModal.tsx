@@ -1,21 +1,9 @@
 import { useState } from 'react';
 import { Button, Input, Modal, Switch, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-
-interface ForbiddenWord {
-  key: string;
-  word: string;
-  registeredAt: string;
-  isActive: boolean;
-}
-
-const INITIAL_WORDS: ForbiddenWord[] = [
-  { key: '1', word: '[욕설1]', registeredAt: '2025-12-01', isActive: true },
-  { key: '2', word: '[욕설2]', registeredAt: '2026-01-14', isActive: true },
-  { key: '3', word: '[비방어]', registeredAt: '2026-02-08', isActive: true },
-  { key: '4', word: '[광고문구]', registeredAt: '2026-03-22', isActive: false },
-  { key: '5', word: '[도배문구]', registeredAt: '2026-04-05', isActive: true },
-];
+import type { ProhibitedWord } from '../../types';
+import { useProhibitedWords } from '../../hooks/useProhibitedWords';
+import { useProhibitedWordActions } from '../../hooks/useProhibitedWordActions';
 
 export interface ForbiddenWordModalProps {
   open: boolean;
@@ -23,28 +11,19 @@ export interface ForbiddenWordModalProps {
 }
 
 export const ForbiddenWordModal = ({ open, onClose }: ForbiddenWordModalProps) => {
-  const [words, setWords] = useState<ForbiddenWord[]>(INITIAL_WORDS);
   const [newWord, setNewWord] = useState('');
+  const { data, isLoading } = useProhibitedWords({ page: 0, size: 100 }, { enabled: open });
+  const { create, updateStatus, remove } = useProhibitedWordActions();
+
+  const words = data?.prohibitedWordList ?? [];
 
   const addWord = () => {
-    if (!newWord.trim()) return;
-    const today = new Date().toISOString().split('T')[0];
-    setWords(prev => [
-      ...prev,
-      { key: Date.now().toString(), word: newWord.trim(), registeredAt: today, isActive: true },
-    ]);
-    setNewWord('');
+    const trimmed = newWord.trim();
+    if (!trimmed) return;
+    create.mutate(trimmed, { onSuccess: () => setNewWord('') });
   };
 
-  const toggleActive = (key: string, isActive: boolean) => {
-    setWords(prev => prev.map(w => (w.key === key ? { ...w, isActive } : w)));
-  };
-
-  const deleteWord = (key: string) => {
-    setWords(prev => prev.filter(w => w.key !== key));
-  };
-
-  const columns: ColumnsType<ForbiddenWord> = [
+  const columns: ColumnsType<ProhibitedWord> = [
     {
       title: '단어',
       dataIndex: 'word',
@@ -55,24 +34,24 @@ export const ForbiddenWordModal = ({ open, onClose }: ForbiddenWordModalProps) =
     },
     {
       title: '등록일',
-      dataIndex: 'registeredAt',
-      key: 'registeredAt',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
       render: (date: string) => (
-        <span className="text-text-muted text-[13px]">{date}</span>
+        <span className="text-text-muted text-[13px]">{date.slice(0, 10)}</span>
       ),
     },
     {
       title: '활성',
-      dataIndex: 'isActive',
-      key: 'isActive',
+      dataIndex: 'enabled',
+      key: 'enabled',
       align: 'center',
       width: 90,
-      render: (isActive: boolean, record) => (
+      render: (enabled: boolean, record) => (
         <Switch
-          checked={isActive}
-          onChange={val => toggleActive(record.key, val)}
+          checked={enabled}
+          onChange={val => updateStatus.mutate({ wordId: record.wordId, enabled: val })}
           size="small"
-          style={isActive ? { background: '#2f6df0' } : undefined}
+          style={enabled ? { background: '#2f6df0' } : undefined}
         />
       ),
     },
@@ -83,7 +62,7 @@ export const ForbiddenWordModal = ({ open, onClose }: ForbiddenWordModalProps) =
       width: 70,
       render: (_, record) => (
         <button
-          onClick={() => deleteWord(record.key)}
+          onClick={() => remove.mutate(record.wordId)}
           className="text-text-disabled hover:text-danger transition-colors text-base cursor-pointer"
         >
           🗑
@@ -131,14 +110,17 @@ export const ForbiddenWordModal = ({ open, onClose }: ForbiddenWordModalProps) =
           <Button
             type="primary"
             onClick={addWord}
+            loading={create.isPending}
             style={{ background: '#2f6df0', borderColor: '#2f6df0' }}
           >
             추가
           </Button>
         </div>
         <Table
+          rowKey="wordId"
           columns={columns}
           dataSource={words}
+          loading={isLoading}
           pagination={false}
           size="small"
           className="border border-border rounded-md overflow-hidden"

@@ -1,46 +1,93 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Table } from 'antd';
-import type { Report, ReportSortOrder, ReportTab } from '../../types';
+import type { Report, ReporterDetail, ReportListItem, ReportSortOrder, ReportTab } from '../../types';
 import { RejectModal } from '../../components/common/RejectModal';
+import { useReports } from '../../hooks/useReports';
+import { useReportActions } from '../../hooks/useReportActions';
 import { ReportTabs } from './components/ReportTabs';
 import { ReportFilter } from './components/ReportFilter';
 import { ExpandedReporterRow } from './components/ExpandedReporterRow';
 import { getReportColumns } from './reportColumns';
 import { reportTableStyles } from './styles';
 
-const MOCK_REPORTS: Record<ReportTab, Report[]> = {
-  접수: [
-    {
-      id: '1',
-      reportedAt: '2026-06-02',
-      categories: ['욕설·비방'],
-      reportCount: 3,
-      targetReview: '집주인이 [욕설] 진짜 별로예요 — 부산대',
-      reporterSummary: 'user_8821 외 2명',
-      details: [
-        { reporter: 'user_8821', reportedAt: '2026-06-02 14:30', reason: '욕설 표현이 그대로 노출되어 있어요.' },
-        { reporter: 'user_1043', reportedAt: '2026-06-02 18:05', reason: '비방성 표현이 과해 신고합니다.' },
-        { reporter: 'user_5577', reportedAt: '2026-06-03 08:11', reason: '부적절한 내용이라 생각합니다.' },
-      ],
-    },
-  ],
-  검토중: [],
-  처리완료: [],
-};
+const PAGE_SIZE = 50;
 
-const TAB_COUNTS: Record<ReportTab, number> = { 접수: 3, 검토중: 1, 처리완료: 12 };
+// 서버는 신고 단위 평탄 목록(reportList)을 내려주므로 reviewId 기준으로 묶어 리뷰 단위 행을 만든다
+function toReportRows(items: ReportListItem[]): Report[] {
+  const byReview = new Map<number, ReportListItem[]>();
+  items.forEach(item => {
+    const group = byReview.get(item.reviewId) ?? [];
+    group.push(item);
+    byReview.set(item.reviewId, group);
+  });
+
+  return Array.from(byReview.entries()).map(([reviewId, group]) => {
+    const details: ReporterDetail[] = group.map(item => ({
+      reportId: item.reportId,
+      reporter: `user_${item.reporterId}`,
+      reportedAt: item.createdAt,
+      reason: item.reason,
+      status: item.status,
+    }));
+
+    const reasons = Array.from(new Set(details.map(d => d.reason)));
+    const latestReportedAt = details.reduce(
+      (latest, d) => (d.reportedAt > latest ? d.reportedAt : latest),
+      details[0]?.reportedAt ?? '',
+    );
+    const reporterSummary =
+      details.length > 1 ? `${details[0].reporter} 외 ${details.length - 1}명` : (details[0]?.reporter ?? '-');
+
+    return {
+      id: String(reviewId),
+      reviewId,
+      reportedAt: latestReportedAt,
+      reasons,
+      reportCount: group.length,
+      targetReview: group[0].reviewContent,
+      reporterSummary,
+      details,
+    };
+  });
+}
+
+function sortReports(reports: Report[], sortOrder: ReportSortOrder): Report[] {
+  const sorted = [...reports];
+  if (sortOrder === 'most_reported') {
+    sorted.sort((a, b) => b.reportCount - a.reportCount);
+  } else {
+    sorted.sort((a, b) => b.reportedAt.localeCompare(a.reportedAt));
+  }
+  return sorted;
+}
 
 const Reports = () => {
   const [activeTab, setActiveTab] = useState<ReportTab>('접수');
   const [sortOrder, setSortOrder] = useState<ReportSortOrder>('latest');
-  const [rejectTargetId, setRejectTargetId] = useState<string | null>(null);
-  const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>(['1']);
+  const [rejectTarget, setRejectTarget] = useState<{ reviewId: number; reportId: number } | null>(null);
+  const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
 
-  const columns = getReportColumns(activeTab, setRejectTargetId);
+  const pendingQuery = useReports({ status: 'PENDING', page: 0, size: PAGE_SIZE });
+  const rejectedQuery = useReports({ status: 'REJECT', page: 0, size: PAGE_SIZE });
+  const { dismiss } = useReportActions();
+
+  const activeQuery = activeTab === '접수' ? pendingQuery : rejectedQuery;
+
+  const reports = useMemo(
+    () => sortReports(toReportRows(activeQuery.data?.reportList ?? []), sortOrder),
+    [activeQuery.data, sortOrder],
+  );
+
+  const tabCounts: Record<ReportTab, number> = {
+    접수: pendingQuery.data?.pageInfo.totalElements ?? 0,
+    처리완료: rejectedQuery.data?.pageInfo.totalElements ?? 0,
+  };
+
+  const columns = getReportColumns(activeTab, (reviewId, reportId) => setRejectTarget({ reviewId, reportId }));
 
   return (
     <div className="flex flex-col gap-3">
-      <ReportTabs activeTab={activeTab} onChange={setActiveTab} tabCounts={TAB_COUNTS} />
+      <ReportTabs activeTab={activeTab} onChange={setActiveTab} tabCounts={tabCounts} />
 
       <ReportFilter sortOrder={sortOrder} onSortOrderChange={setSortOrder} />
 
@@ -48,19 +95,23 @@ const Reports = () => {
         <Table<Report>
           rowKey="id"
           columns={columns}
-          dataSource={MOCK_REPORTS[activeTab]}
+          dataSource={reports}
+          loading={activeQuery.isLoading}
           pagination={false}
           className={reportTableStyles.table}
           expandable={{
-            expandedRowRender: record => <ExpandedReporterRow details={record.details} />,
+            expandedRowRender: record => (
+              <ExpandedReporterRow
+                details={record.details}
+                onReject={reportId => setRejectTarget({ reviewId: record.reviewId, reportId })}
+              />
+            ),
             showExpandColumn: false,
             expandRowByClick: true,
             expandedRowKeys,
             onExpand: (expanded, record) =>
               setExpandedRowKeys(
-                expanded
-                  ? [...expandedRowKeys, record.id]
-                  : expandedRowKeys.filter(k => k !== record.id),
+                expanded ? [...expandedRowKeys, record.id] : expandedRowKeys.filter(k => k !== record.id),
               ),
           }}
           onRow={() => ({ className: 'cursor-pointer' })}
@@ -69,14 +120,19 @@ const Reports = () => {
 
       <p className="text-[11.5px] text-text-disabled leading-[16.68px]">
         ※ 동일 리뷰에 신고가 여러 건이면 한 행으로 묶이고 &quot;신고 N건&quot; 뱃지가 붙습니다.
-        검토중(1)·처리완료(12)는 상단 탭에서 확인합니다.
+        행을 펼치면 신고 건별로 개별 기각할 수 있습니다.
       </p>
 
       <RejectModal
-        open={rejectTargetId !== null}
-        onClose={() => setRejectTargetId(null)}
-        onConfirm={() => {
-          setRejectTargetId(null);
+        open={rejectTarget !== null}
+        onClose={() => setRejectTarget(null)}
+        confirmLoading={dismiss.isPending}
+        onConfirm={(rejectReasonType, customReason) => {
+          if (!rejectTarget) return;
+          dismiss.mutate(
+            { reportId: rejectTarget.reportId, payload: { rejectReasonType, customReason } },
+            { onSuccess: () => setRejectTarget(null) },
+          );
         }}
       />
     </div>
