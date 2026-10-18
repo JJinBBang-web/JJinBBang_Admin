@@ -49,7 +49,7 @@ export const ForbiddenWordModal = ({ open, onClose }: ForbiddenWordModalProps) =
       render: (enabled: boolean, record) => (
         <Switch
           checked={enabled}
-          onChange={val => updateStatus.mutate({ wordId: record.id, enabled: val })}
+          onChange={val => updateStatus.mutate({ wordId: record.wordId, enabled: val })}
           size="small"
           style={enabled ? { background: '#2f6df0' } : undefined}
         />
@@ -62,7 +62,7 @@ export const ForbiddenWordModal = ({ open, onClose }: ForbiddenWordModalProps) =
       width: 70,
       render: (_, record) => (
         <button
-          onClick={() => remove.mutate(record.id)}
+          onClick={() => remove.mutate(record.wordId)}
           className="text-text-disabled hover:text-danger transition-colors text-base cursor-pointer"
         >
           🗑
@@ -117,7 +117,7 @@ export const ForbiddenWordModal = ({ open, onClose }: ForbiddenWordModalProps) =
           </Button>
         </div>
         <Table
-          rowKey="id"
+          rowKey="wordId"
           columns={columns}
           dataSource={words}
           loading={isLoading}

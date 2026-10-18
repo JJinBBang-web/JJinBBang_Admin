@@ -26,9 +26,9 @@ export function updateProhibitedWordStatus(
   wordId: number,
   enabled: boolean,
 ): Promise<ProhibitedWord> {
-  return http.patch<ProhibitedWord>(`/admin/forbidden-words/${wordId}`, { enabled });
+  return http.patch<ProhibitedWord>(`/admin/prohibited-words/${wordId}`, { enabled });
 }
 
 export function deleteProhibitedWord(wordId: number): Promise<null> {
-  return http.delete<null>(`/admin/forbidden-words/${wordId}`);
+  return http.delete<null>(`/admin/prohibited-words/${wordId}`);
 }

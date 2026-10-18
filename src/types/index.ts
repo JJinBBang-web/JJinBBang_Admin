@@ -88,7 +88,7 @@ export interface Report {
 
 // ── Prohibited Word (신고 관리 · 금칙어 사전) ────────────────────────────
 export interface ProhibitedWord {
-  id: number;
+  wordId: number;
   word: string;
   enabled: boolean;
   createdAt: string;
