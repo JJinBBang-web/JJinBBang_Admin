@@ -106,20 +106,15 @@ export interface PageInfo {
 // ── Report Processing (신고 관리 · 신고 목록/기각) ───────────────────────
 export type ReportProcessStatus = 'PENDING' | 'APPROVE' | 'REJECT';
 
-export interface SubReport {
+export interface ReportListItem {
   reportId: number;
+  reviewId: number;
+  reviewContent: string;
   reporterId: number;
+  reporterUniversity: string;
   reason: string;
   status: ReportProcessStatus;
-  reportedAt: string;
-}
-
-export interface ReportedReview {
-  reviewId: number;
-  schoolName: string;
-  content: string;
-  totalReportCount: number;
-  subReports: SubReport[];
+  createdAt: string;
 }
 
 export type RejectReasonType = 'DUPLICATE' | 'NO_VIOLATION' | 'OTHER';

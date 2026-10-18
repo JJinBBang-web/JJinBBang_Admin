@@ -1,5 +1,5 @@
 import { http } from './client';
-import type { PageInfo, RejectReasonType, ReportedReview, ReportProcessStatus } from '../types';
+import type { PageInfo, RejectReasonType, ReportListItem, ReportProcessStatus } from '../types';
 
 export interface ReportListParams {
   status?: ReportProcessStatus;
@@ -8,7 +8,7 @@ export interface ReportListParams {
 }
 
 export interface ReportListData {
-  reportReviewList: ReportedReview[];
+  reportList: ReportListItem[];
   pageInfo: PageInfo;
 }
 
