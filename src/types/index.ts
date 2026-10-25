@@ -73,6 +73,7 @@ export interface Certificate {
 }
 
 export interface CertificateDetail extends Certificate {
+  userId: string; // 승인/반려 API path에 사용
   joinedAt: string;
   email: string;
   imageUrl: string | null;
