@@ -1,4 +1,5 @@
 import axios, { AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
+import { useAuthStore } from '../store/useAuthStore';
 
 export interface ApiResponse<T> {
   code: number;
@@ -55,6 +56,16 @@ function clearCsrfToken(): void {
   csrfTokenCache = null;
 }
 
+// 세션 쿠키와 병행해 Bearer 토큰도 함께 전송 (백엔드 요구사항 확인 중 — 불필요하면 제거 예정)
+apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  const accessToken = useAuthStore.getState().accessToken;
+  if (accessToken) {
+    config.headers = config.headers ?? new AxiosHeaders();
+    config.headers.set('Authorization', `Bearer ${accessToken}`);
+  }
+  return config;
+});
+
 // 모든 상태 변경 요청에 CSRF 헤더 자동 첨부
 apiClient.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
   const method = config.method?.toLowerCase();
@@ -78,6 +89,9 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+// 응답 body의 code는 200(OK), 201(Created)만 성공으로 처리
+const SUCCESS_CODES = new Set([200, 201]);
 
 async function unwrap<T>(promise: Promise<{ data: ApiResponse<T> }>): Promise<T> {
   let data: ApiResponse<T>;
