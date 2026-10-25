@@ -31,3 +31,6 @@ export const sectionTitleClassName =
 
 export const footerButtonClassName =
   '!h-[33px] !w-full !rounded-sm !border-border !text-[13px] !font-semibold !shadow-none';
+
+export const modalActionButtonClassName =
+  '!h-auto !rounded-sm !border-border !px-[14px] !py-2 !text-[13px] !font-semibold !shadow-none';

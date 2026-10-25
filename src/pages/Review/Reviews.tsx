@@ -3,15 +3,27 @@ import {reviewColumns} from './reviewColumns';
 import { useReviewDetail } from '../../hooks/useReviewDetail';
 import { useReviews } from '../../hooks/useReviews';
 import { useReviewAsideStore } from '../../store/useReviewAsideStore';
+import { useReviewFilterStore } from '../../store/useReviewFilterStore';
 import ReviewFilter from './components/ReviewFilter';
 import ReviewTable from './components/ReviewTable';
 
 const Reviews = () => {
-  const { data: reviews = [], isLoading } = useReviews();
+  const { data, isLoading } = useReviews();
+  const { page, size, setPage, setSize } = useReviewFilterStore();
   const { selectedReviewId, isOpen, openAside, closeAside } =
     useReviewAsideStore();
   const { data: selectedReview = null, isLoading: isDetailLoading } =
     useReviewDetail(selectedReviewId);
+
+  const reviews = data?.reviews ?? [];
+  const pageInfo = data?.pageInfo ?? {
+    currentPage: page,
+    pageSize: size,
+    totalElements: 0,
+    totalPages: 0,
+    isFirst: true,
+    isLast: true,
+  };
 
   return (
     <>
@@ -21,7 +33,15 @@ const Reviews = () => {
         reviews={reviews}
         loading={isLoading}
         columns={reviewColumns}
-        onRowClick={openAside}    
+        pageInfo={pageInfo}
+        onRowClick={openAside}
+        onPageChange={(nextPage, nextSize) => {
+          if (nextSize !== size) {
+            setSize(nextSize);
+            return;
+          }
+          setPage(nextPage);
+        }}
       />
     </div>
     <AsideTab

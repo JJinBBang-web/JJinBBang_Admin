@@ -1,5 +1,11 @@
 export type ReviewStatus = 'public' | 'private';
 
+export type MaskingReasonCategory =
+  | '욕설·비방'
+  | '개인정보 노출'
+  | '허위 의심'
+  | '기타';
+
 export interface Review {
   id: string;
   status: ReviewStatus;
@@ -40,6 +46,15 @@ export interface ReviewDetail extends Review {
   authorInfo: ReviewAuthor;
   reports: ReviewReport[];
   actions: ReviewAction[];
+}
+
+export interface PageInfo {
+  currentPage: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+  isFirst: boolean;
+  isLast: boolean;
 }
 
 // ── Certificate ───────────────────────────────────────────────────────
