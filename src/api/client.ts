@@ -90,9 +90,6 @@ apiClient.interceptors.response.use(
   },
 );
 
-// 응답 body의 code는 200(OK), 201(Created)만 성공으로 처리
-const SUCCESS_CODES = new Set([200, 201]);
-
 async function unwrap<T>(promise: Promise<{ data: ApiResponse<T> }>): Promise<T> {
   let data: ApiResponse<T>;
   try {
